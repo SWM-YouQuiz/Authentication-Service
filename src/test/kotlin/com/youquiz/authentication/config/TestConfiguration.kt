@@ -1,4 +1,4 @@
-package com.youquiz.template.config
+package com.youquiz.authentication.config
 
 import io.kotest.core.config.AbstractProjectConfig
 import io.kotest.core.extensions.Extension

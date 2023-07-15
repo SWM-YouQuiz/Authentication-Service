@@ -1,4 +1,4 @@
-package com.youquiz.template.util
+package com.youquiz.authentication.util
 
 import io.mockk.every
 import io.mockk.mockk
