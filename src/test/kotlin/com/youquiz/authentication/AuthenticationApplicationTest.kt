@@ -1,6 +1,6 @@
-package com.youquiz.template
+package com.youquiz.authentication
 
 import org.springframework.boot.test.context.SpringBootTest
 
 @SpringBootTest
-class TemplateApplicationTest
+class AuthenticationApplicationTest
