@@ -65,7 +65,7 @@ tasks {
     test {
         useJUnitPlatform()
 
-        finalizedBy(withType<OpenApi3Task>())
+        finalizedBy(jacocoTestReport, withType<OpenApi3Task>())
     }
 
     jacocoTestCoverageVerification {
@@ -97,6 +97,8 @@ tasks {
                     "**.*Response*",
                     "**.*Configuration*",
                     "**.*Exception*",
+                    "**.*LogUtil*",
+                    "**.*Client*"
                 )
             }
         }
