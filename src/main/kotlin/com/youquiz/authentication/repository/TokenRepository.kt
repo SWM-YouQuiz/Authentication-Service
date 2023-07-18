@@ -26,11 +26,9 @@ class TokenRepository(
 
     suspend fun save(token: Token): Boolean =
         with(token) {
-            redisTemplate.run {
-                val key = getKey(userId)
-
-                opsForValue().set(key, content, Duration.ofMinutes(expire)).awaitSingle()
-            }
+            redisTemplate.opsForValue()
+                .set(getKey(userId), content, Duration.ofMinutes(expire))
+                .awaitSingle()
         }
 
     suspend fun deleteByUserId(userId: Long): Boolean =
