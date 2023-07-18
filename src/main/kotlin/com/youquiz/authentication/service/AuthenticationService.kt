@@ -16,10 +16,10 @@ class AuthenticationService(
     private val jwtProvider: JwtProvider,
     private val passwordEncoder: PasswordEncoder
 ) {
-    suspend fun login(loginRequest: LoginRequest): LoginResponse {
-        val user = userClient.findByUsername(loginRequest.username)
+    suspend fun login(request: LoginRequest): LoginResponse {
+        val user = userClient.findByUsername(request.username)
 
-        if (passwordEncoder.matches(loginRequest.password, user.password)) {
+        if (passwordEncoder.matches(request.password, user.password)) {
             val authentication = user.run {
                 DefaultJwtAuthentication(id = id, authorities = listOf(SimpleGrantedAuthority(role.name)))
             }
