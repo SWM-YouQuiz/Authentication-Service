@@ -5,20 +5,25 @@ import com.youquiz.authentication.dto.LoginRequest
 import com.youquiz.authentication.exception.PasswordNotMatchException
 import com.youquiz.authentication.exception.UserNotFoundException
 import com.youquiz.authentication.fixture.*
+import com.youquiz.authentication.repository.TokenRepository
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.shouldBe
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.mockk
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 
 class AuthenticationServiceTest : BehaviorSpec() {
+    private val tokenRepository = mockk<TokenRepository>()
+
     private val userClient = mockk<UserClient>()
 
     private val authenticationService =
         AuthenticationService(
-            jwtProvider = jwtProvider,
+            tokenRepository = tokenRepository,
             userClient = userClient,
+            jwtProvider = jwtProvider,
             passwordEncoder = BCryptPasswordEncoder()
         )
 
@@ -65,6 +70,20 @@ class AuthenticationServiceTest : BehaviorSpec() {
                     shouldThrow<UserNotFoundException> {
                         authenticationService.login(LoginRequest(username = invalidUsername, password = PASSWORD))
                     }
+                }
+            }
+        }
+
+        Given("유저가 로그인 상태인 경우") {
+            val user = USER
+
+            coEvery { tokenRepository.deleteByUserId(any()) } returns true
+
+            When("로그아웃을 시도하면") {
+                authenticationService.logout(user.id)
+
+                Then("해당 유저의 리프레쉬 토큰이 삭제된다.") {
+                    coVerify { tokenRepository.deleteByUserId(any()) }
                 }
             }
         }
