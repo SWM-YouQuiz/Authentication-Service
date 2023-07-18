@@ -6,12 +6,14 @@ import com.youquiz.authentication.adapter.client.UserClient
 import com.youquiz.authentication.dto.LoginRequest
 import com.youquiz.authentication.dto.LoginResponse
 import com.youquiz.authentication.exception.PasswordNotMatchException
+import com.youquiz.authentication.repository.TokenRepository
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 
 @Service
 class AuthenticationService(
+    private val tokenRepository: TokenRepository,
     private val userClient: UserClient,
     private val jwtProvider: JwtProvider,
     private val passwordEncoder: PasswordEncoder
@@ -28,5 +30,9 @@ class AuthenticationService(
 
             return LoginResponse(accessToken = accessToken, refreshToken = refreshToken)
         } else throw PasswordNotMatchException()
+    }
+
+    suspend fun logout(userId: Long) {
+        tokenRepository.deleteByUserId(userId)
     }
 }
