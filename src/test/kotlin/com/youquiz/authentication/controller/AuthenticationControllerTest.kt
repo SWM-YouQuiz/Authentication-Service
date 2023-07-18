@@ -7,9 +7,9 @@ import com.youquiz.authentication.dto.LoginRequest
 import com.youquiz.authentication.dto.LoginResponse
 import com.youquiz.authentication.exception.PasswordNotMatchException
 import com.youquiz.authentication.exception.UserNotFoundException
-import com.youquiz.authentication.fixture.JWT_AUTHENTICATION
 import com.youquiz.authentication.fixture.PASSWORD
 import com.youquiz.authentication.fixture.USERNAME
+import com.youquiz.authentication.fixture.createJwtAuthentication
 import com.youquiz.authentication.fixture.jwtProvider
 import com.youquiz.authentication.global.dto.ErrorResponse
 import com.youquiz.authentication.handler.AuthenticationHandler
@@ -38,8 +38,8 @@ class AuthenticationControllerTest : BaseControllerTest() {
     )
 
     private val loginResponse = LoginResponse(
-        accessToken = jwtProvider.createAccessToken(JWT_AUTHENTICATION),
-        refreshToken = jwtProvider.createRefreshToken(JWT_AUTHENTICATION)
+        accessToken = jwtProvider.createAccessToken(createJwtAuthentication()),
+        refreshToken = jwtProvider.createRefreshToken(createJwtAuthentication())
     )
 
     init {
