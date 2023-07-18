@@ -1,4 +1,4 @@
 jwt:
   secretKey: dasdsaddsaldldasjdjdajkdjkdsakjldasjkldkjldas
-  accessTokenExpire: 30
-  refreshTokenExpire: 120
+  accessTokenExpire: 5
+  refreshTokenExpire: 10
