@@ -14,6 +14,7 @@ class AuthenticationRouter {
         coRouter {
             "/auth".nest {
                 POST("/login", handler::login)
+                GET("/logout", handler::logout)
             }
         }
 }
