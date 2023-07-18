@@ -18,6 +18,7 @@ import com.youquiz.authentication.service.AuthenticationService
 import com.youquiz.authentication.util.BaseControllerTest
 import com.youquiz.authentication.util.desc
 import com.youquiz.authentication.util.errorResponseFields
+import com.youquiz.authentication.util.withMockUser
 import io.mockk.coEvery
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest
 import org.springframework.restdocs.operation.preprocess.Preprocessors.*
@@ -124,6 +125,40 @@ class AuthenticationControllerTest : BaseControllerTest() {
                                 responseFields(errorResponseFields)
                             )
                         )
+                }
+            }
+        }
+
+
+        describe("logout()은") {
+            context("요청을 보낸 유저가 로그인 상태인 경우") {
+                coEvery { authenticationService.logout(any()) } returns Unit
+                withMockUser()
+
+                it("상태 코드 200을 반환한다.") {
+                    webClient
+                        .get()
+                        .uri("/auth/logout")
+                        .exchange()
+                        .expectStatus()
+                        .isOk
+                        .expectBody()
+                        .consumeWith(WebTestClientRestDocumentationWrapper.document("로그아웃 성공(200)"))
+                }
+            }
+
+            context("요청을 보낸 유저가 로그인 상태가 아닌 경우") {
+                coEvery { authenticationService.logout(any()) } returns Unit
+
+                it("상태 코드 401을 반환한다.") {
+                    webClient
+                        .get()
+                        .uri("/auth/logout")
+                        .exchange()
+                        .expectStatus()
+                        .isUnauthorized
+                        .expectBody()
+                        .consumeWith(WebTestClientRestDocumentationWrapper.document("로그아웃 실패(401)"))
                 }
             }
         }
