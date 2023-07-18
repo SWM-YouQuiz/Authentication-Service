@@ -5,12 +5,13 @@ import com.ninjasquad.springmockk.MockkBean
 import com.youquiz.authentication.config.SecurityTestConfiguration
 import com.youquiz.authentication.dto.LoginRequest
 import com.youquiz.authentication.dto.LoginResponse
+import com.youquiz.authentication.dto.RefreshRequest
+import com.youquiz.authentication.dto.RefreshResponse
+import com.youquiz.authentication.exception.InvalidAccessException
 import com.youquiz.authentication.exception.PasswordNotMatchException
+import com.youquiz.authentication.exception.TokenNotFoundException
 import com.youquiz.authentication.exception.UserNotFoundException
-import com.youquiz.authentication.fixture.PASSWORD
-import com.youquiz.authentication.fixture.USERNAME
-import com.youquiz.authentication.fixture.createJwtAuthentication
-import com.youquiz.authentication.fixture.jwtProvider
+import com.youquiz.authentication.fixture.*
 import com.youquiz.authentication.global.dto.ErrorResponse
 import com.youquiz.authentication.handler.AuthenticationHandler
 import com.youquiz.authentication.router.AuthenticationRouter
@@ -38,6 +39,16 @@ class AuthenticationControllerTest : BaseControllerTest() {
     )
 
     private val loginResponse = LoginResponse(
+        accessToken = jwtProvider.createAccessToken(createJwtAuthentication()),
+        refreshToken = jwtProvider.createRefreshToken(createJwtAuthentication())
+    )
+
+    private val refreshRequest = RefreshRequest(
+        userId = ID,
+        refreshToken = jwtProvider.createRefreshToken(createJwtAuthentication())
+    )
+
+    private val refreshResponse = RefreshResponse(
         accessToken = jwtProvider.createAccessToken(createJwtAuthentication()),
         refreshToken = jwtProvider.createRefreshToken(createJwtAuthentication())
     )
@@ -159,6 +170,92 @@ class AuthenticationControllerTest : BaseControllerTest() {
                         .isUnauthorized
                         .expectBody()
                         .consumeWith(WebTestClientRestDocumentationWrapper.document("로그아웃 실패(401)"))
+                }
+            }
+        }
+
+        describe("refresh()는") {
+            context("요청을 보낸 유저가 로그인 상태인 경우") {
+                coEvery { authenticationService.refresh(any()) } returns refreshResponse
+
+                it("상태 코드 200과 refreshResponse를 반환한다.") {
+                    webClient
+                        .post()
+                        .uri("/auth/refresh")
+                        .bodyValue(refreshRequest)
+                        .exchange()
+                        .expectStatus()
+                        .isOk
+                        .expectBody(RefreshResponse::class.java)
+                        .consumeWith(
+                            WebTestClientRestDocumentationWrapper.document(
+                                "토큰 재발급 성공",
+                                preprocessRequest(prettyPrint()),
+                                preprocessResponse(prettyPrint()),
+                                requestFields(
+                                    "userId" desc "유저 식별자",
+                                    "refreshToken" desc "리프레쉬 토큰"
+                                ),
+                                responseFields(
+                                    "accessToken" desc "액세스 토큰",
+                                    "refreshToken" desc "리프레쉬 토큰"
+                                )
+                            )
+                        )
+                }
+            }
+
+            context("요청을 보낸 유저의 리프레쉬 토큰이 저장소에 존재하지 않는 경우") {
+                coEvery { authenticationService.refresh(any()) } throws TokenNotFoundException()
+
+                it("상태 코드 404와 에러를 반환한다.") {
+                    webClient
+                        .post()
+                        .uri("/auth/refresh")
+                        .bodyValue(refreshRequest)
+                        .exchange()
+                        .expectStatus()
+                        .isNotFound
+                        .expectBody(ErrorResponse::class.java)
+                        .consumeWith(
+                            WebTestClientRestDocumentationWrapper.document(
+                                "토큰 리프레쉬 실패(404)",
+                                preprocessRequest(prettyPrint()),
+                                preprocessResponse(prettyPrint()),
+                                requestFields(
+                                    "userId" desc "유저 식별자",
+                                    "refreshToken" desc "리프레쉬 토큰"
+                                ),
+                                responseFields(errorResponseFields)
+                            )
+                        )
+                }
+            }
+
+            context("요청을 보낸 유저의 리프레쉬 토큰이 저장소에 있는 리프레쉬 토큰과 일치하지 않는 경우") {
+                coEvery { authenticationService.refresh(any()) } throws InvalidAccessException()
+
+                it("상태 코드 403 에러를 반환한다.") {
+                    webClient
+                        .post()
+                        .uri("/auth/refresh")
+                        .bodyValue(refreshRequest)
+                        .exchange()
+                        .expectStatus()
+                        .isForbidden
+                        .expectBody(ErrorResponse::class.java)
+                        .consumeWith(
+                            WebTestClientRestDocumentationWrapper.document(
+                                "토큰 리프레쉬 실패(403)",
+                                preprocessRequest(prettyPrint()),
+                                preprocessResponse(prettyPrint()),
+                                requestFields(
+                                    "userId" desc "유저 식별자",
+                                    "refreshToken" desc "리프레쉬 토큰"
+                                ),
+                                responseFields(errorResponseFields)
+                            )
+                        )
                 }
             }
         }
