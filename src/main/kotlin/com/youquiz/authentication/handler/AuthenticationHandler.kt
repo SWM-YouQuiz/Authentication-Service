@@ -10,8 +10,8 @@ import org.springframework.web.reactive.function.server.*
 class AuthenticationHandler(
     private val authenticationService: AuthenticationService
 ) {
-    suspend fun login(serverRequest: ServerRequest): ServerResponse =
-        serverRequest.awaitBody<LoginRequest>().let {
+    suspend fun login(request: ServerRequest): ServerResponse =
+        request.awaitBody<LoginRequest>().let {
             ServerResponse.ok().bodyValueAndAwait(authenticationService.login(it))
         }
 
