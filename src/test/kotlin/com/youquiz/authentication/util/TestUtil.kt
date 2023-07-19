@@ -1,6 +1,6 @@
 package com.youquiz.authentication.util
 
-import com.youquiz.authentication.fixture.JWT_AUTHENTICATION
+import com.youquiz.authentication.fixture.createJwtAuthentication
 import org.springframework.restdocs.payload.FieldDescriptor
 import org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath
 import org.springframework.restdocs.request.ParameterDescriptor
@@ -14,7 +14,7 @@ infix fun String.paramDesc(description: String): ParameterDescriptor =
     parameterWithName(this).description(description)
 
 fun withMockUser() {
-    SecurityContextHolder.getContext().authentication = JWT_AUTHENTICATION
+    SecurityContextHolder.getContext().authentication = createJwtAuthentication()
 }
 
 val errorResponseFields = listOf(

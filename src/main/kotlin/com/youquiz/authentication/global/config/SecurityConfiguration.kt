@@ -27,7 +27,9 @@ class SecurityConfiguration {
             httpBasic { it.authenticationEntryPoint(HttpStatusServerEntryPoint(HttpStatus.UNAUTHORIZED)) }
             securityContextRepository(NoOpServerSecurityContextRepository.getInstance())
             authorizeExchange {
-                it.anyExchange()
+                it.pathMatchers("/auth/logout")
+                    .authenticated()
+                    .anyExchange()
                     .permitAll()
             }
             addFilterAt(JwtAuthenticationFilter(jwtProvider), SecurityWebFiltersOrder.AUTHORIZATION)
