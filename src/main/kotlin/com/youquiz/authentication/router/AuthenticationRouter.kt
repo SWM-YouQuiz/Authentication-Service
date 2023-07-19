@@ -15,6 +15,7 @@ class AuthenticationRouter {
             "/auth".nest {
                 POST("/login", handler::login)
                 GET("/logout", handler::logout)
+                POST("/refresh", handler::refresh)
             }
         }
 }

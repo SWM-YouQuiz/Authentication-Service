@@ -2,6 +2,7 @@ package com.youquiz.authentication.handler
 
 import com.github.jwt.authentication.JwtAuthentication
 import com.youquiz.authentication.dto.LoginRequest
+import com.youquiz.authentication.dto.RefreshRequest
 import com.youquiz.authentication.service.AuthenticationService
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.server.*
@@ -10,8 +11,8 @@ import org.springframework.web.reactive.function.server.*
 class AuthenticationHandler(
     private val authenticationService: AuthenticationService
 ) {
-    suspend fun login(serverRequest: ServerRequest): ServerResponse =
-        serverRequest.awaitBody<LoginRequest>().let {
+    suspend fun login(request: ServerRequest): ServerResponse =
+        request.awaitBody<LoginRequest>().let {
             ServerResponse.ok().bodyValueAndAwait(authenticationService.login(it))
         }
 
@@ -19,5 +20,10 @@ class AuthenticationHandler(
         with(request.awaitPrincipal() as JwtAuthentication) {
             authenticationService.logout(id)
             ServerResponse.ok().buildAndAwait()
+        }
+
+    suspend fun refresh(request: ServerRequest): ServerResponse =
+        request.awaitBody<RefreshRequest>().let {
+            ServerResponse.ok().bodyValueAndAwait(authenticationService.refresh(it))
         }
 }
