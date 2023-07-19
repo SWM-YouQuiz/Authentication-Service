@@ -36,6 +36,13 @@ class AuthenticationService(
                 val accessToken = jwtProvider.createAccessToken(it)
                 val refreshToken = jwtProvider.createRefreshToken(it)
 
+                tokenRepository.save(
+                    Token(
+                        userId = it.id,
+                        content = refreshToken
+                    )
+                )
+
                 return LoginResponse(accessToken = accessToken, refreshToken = refreshToken)
             }
         } else throw PasswordNotMatchException()
