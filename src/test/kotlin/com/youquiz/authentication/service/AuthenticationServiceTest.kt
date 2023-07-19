@@ -57,7 +57,12 @@ class AuthenticationServiceTest : BehaviorSpec() {
             When("로그인을 시도하면") {
                 Then("예외가 발생한다.") {
                     shouldThrow<PasswordNotMatchException> {
-                        authenticationService.login(LoginRequest(username = user.username, password = INVALID_PASSWORD))
+                        authenticationService.login(
+                            LoginRequest(
+                                username = user.username,
+                                password = INVALID_PASSWORD
+                            )
+                        )
                     }
                 }
             }
@@ -70,7 +75,12 @@ class AuthenticationServiceTest : BehaviorSpec() {
             When("로그인을 시도하면") {
                 Then("예외가 발생한다.") {
                     shouldThrow<UserNotFoundException> {
-                        authenticationService.login(LoginRequest(username = INVALID_USERNAME, password = PASSWORD))
+                        authenticationService.login(
+                            LoginRequest(
+                                username = INVALID_USERNAME,
+                                password = PASSWORD
+                            )
+                        )
                     }
                 }
             }
