@@ -38,6 +38,11 @@ class AuthenticationControllerTest : BaseControllerTest() {
         password = PASSWORD
     )
 
+    private val loginRequestFields = listOf(
+        "username" desc "아이디",
+        "password" desc "패스워드"
+    )
+
     private val loginResponse = LoginResponse(
         accessToken = jwtProvider.createAccessToken(createJwtAuthentication()),
         refreshToken = jwtProvider.createRefreshToken(createJwtAuthentication())
@@ -51,6 +56,21 @@ class AuthenticationControllerTest : BaseControllerTest() {
     private val refreshResponse = RefreshResponse(
         accessToken = jwtProvider.createAccessToken(createJwtAuthentication()),
         refreshToken = jwtProvider.createRefreshToken(createJwtAuthentication())
+    )
+
+    private val loginResponseFields = listOf(
+        "accessToken" desc "액세스 토큰",
+        "refreshToken" desc "리프레쉬 토큰"
+    )
+
+    private val refreshRequestFields = listOf(
+        "userId" desc "유저 식별자",
+        "refreshToken" desc "리프레쉬 토큰"
+    )
+
+    private val refreshResponseFields = listOf(
+        "accessToken" desc "액세스 토큰",
+        "refreshToken" desc "리프레쉬 토큰"
     )
 
     init {
@@ -69,17 +89,11 @@ class AuthenticationControllerTest : BaseControllerTest() {
                         .expectBody(LoginResponse::class.java)
                         .consumeWith(
                             WebTestClientRestDocumentationWrapper.document(
-                                "로그인 성공",
+                                "로그인 성공(200)",
                                 preprocessRequest(prettyPrint()),
                                 preprocessResponse(prettyPrint()),
-                                requestFields(
-                                    "username" desc "아이디",
-                                    "password" desc "패스워드"
-                                ),
-                                responseFields(
-                                    "accessToken" desc "액세스 토큰",
-                                    "refreshToken" desc "리프레쉬 토큰"
-                                )
+                                requestFields(loginRequestFields),
+                                responseFields(loginResponseFields)
                             )
                         )
                 }
@@ -102,10 +116,7 @@ class AuthenticationControllerTest : BaseControllerTest() {
                                 "로그인 실패(400)",
                                 preprocessRequest(prettyPrint()),
                                 preprocessResponse(prettyPrint()),
-                                requestFields(
-                                    "username" desc "아이디",
-                                    "password" desc "패스워드"
-                                ),
+                                requestFields(loginRequestFields),
                                 responseFields(errorResponseFields)
                             )
                         )
@@ -129,10 +140,7 @@ class AuthenticationControllerTest : BaseControllerTest() {
                                 "로그인 실패(404)",
                                 preprocessRequest(prettyPrint()),
                                 preprocessResponse(prettyPrint()),
-                                requestFields(
-                                    "username" desc "아이디",
-                                    "password" desc "패스워드"
-                                ),
+                                requestFields(loginRequestFields),
                                 responseFields(errorResponseFields)
                             )
                         )
@@ -189,17 +197,11 @@ class AuthenticationControllerTest : BaseControllerTest() {
                         .expectBody(RefreshResponse::class.java)
                         .consumeWith(
                             WebTestClientRestDocumentationWrapper.document(
-                                "토큰 재발급 성공",
+                                "토큰 재발급 성공(200)",
                                 preprocessRequest(prettyPrint()),
                                 preprocessResponse(prettyPrint()),
-                                requestFields(
-                                    "userId" desc "유저 식별자",
-                                    "refreshToken" desc "리프레쉬 토큰"
-                                ),
-                                responseFields(
-                                    "accessToken" desc "액세스 토큰",
-                                    "refreshToken" desc "리프레쉬 토큰"
-                                )
+                                requestFields(refreshRequestFields),
+                                responseFields(refreshResponseFields)
                             )
                         )
                 }
@@ -222,10 +224,7 @@ class AuthenticationControllerTest : BaseControllerTest() {
                                 "토큰 리프레쉬 실패(404)",
                                 preprocessRequest(prettyPrint()),
                                 preprocessResponse(prettyPrint()),
-                                requestFields(
-                                    "userId" desc "유저 식별자",
-                                    "refreshToken" desc "리프레쉬 토큰"
-                                ),
+                                requestFields(refreshRequestFields),
                                 responseFields(errorResponseFields)
                             )
                         )
@@ -235,7 +234,7 @@ class AuthenticationControllerTest : BaseControllerTest() {
             context("요청을 보낸 유저의 리프레쉬 토큰이 저장소에 있는 리프레쉬 토큰과 일치하지 않는 경우") {
                 coEvery { authenticationService.refresh(any()) } throws InvalidAccessException()
 
-                it("상태 코드 403 에러를 반환한다.") {
+                it("상태 코드 403과 에러를 반환한다.") {
                     webClient
                         .post()
                         .uri("/auth/refresh")
@@ -249,10 +248,7 @@ class AuthenticationControllerTest : BaseControllerTest() {
                                 "토큰 리프레쉬 실패(403)",
                                 preprocessRequest(prettyPrint()),
                                 preprocessResponse(prettyPrint()),
-                                requestFields(
-                                    "userId" desc "유저 식별자",
-                                    "refreshToken" desc "리프레쉬 토큰"
-                                ),
+                                requestFields(refreshRequestFields),
                                 responseFields(errorResponseFields)
                             )
                         )

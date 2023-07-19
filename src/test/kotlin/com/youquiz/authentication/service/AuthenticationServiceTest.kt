@@ -32,9 +32,9 @@ class AuthenticationServiceTest : BehaviorSpec() {
 
     init {
         Given("해당 아이디를 가진 유저가 존재하고 비밀번호가 일치하는 경우") {
-            val user = createUser()
-
-            coEvery { userClient.findByUsername(any()) } returns user
+            val user = createUser().also {
+                coEvery { userClient.findByUsername(any()) } returns it
+            }
 
             When("로그인을 시도하면") {
                 val loginResponse =
@@ -48,9 +48,9 @@ class AuthenticationServiceTest : BehaviorSpec() {
         }
 
         Given("해당 아이디를 가진 유저가 존재하지만 비밀번호가 일치하지 않는 경우") {
-            val user = createUser()
-
-            coEvery { userClient.findByUsername(any()) } returns user
+            val user = createUser().also {
+                coEvery { userClient.findByUsername(any()) } returns it
+            }
 
             When("로그인을 시도하면") {
                 Then("예외가 발생한다.") {
