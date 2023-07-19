@@ -27,13 +27,17 @@ class AuthenticationService(
         val user = userClient.findByUsername(request.username)
 
         if (passwordEncoder.matches(request.password, user.password)) {
-            val authentication = user.run {
-                DefaultJwtAuthentication(id = id, authorities = listOf(SimpleGrantedAuthority(role.name)))
-            }
-            val accessToken = jwtProvider.createAccessToken(authentication)
-            val refreshToken = jwtProvider.createRefreshToken(authentication)
+            user.run {
+                DefaultJwtAuthentication(
+                    id = id,
+                    authorities = listOf(SimpleGrantedAuthority(role.name))
+                )
+            }.let {
+                val accessToken = jwtProvider.createAccessToken(it)
+                val refreshToken = jwtProvider.createRefreshToken(it)
 
-            return LoginResponse(accessToken = accessToken, refreshToken = refreshToken)
+                return LoginResponse(accessToken = accessToken, refreshToken = refreshToken)
+            }
         } else throw PasswordNotMatchException()
     }
 
@@ -49,9 +53,17 @@ class AuthenticationService(
                 val newAccessToken = jwtProvider.createAccessToken(it)
                 val newRefreshToken = jwtProvider.createRefreshToken(it)
 
-                tokenRepository.save(Token(userId = it.id, content = newRefreshToken))
+                tokenRepository.save(
+                    Token(
+                        userId = it.id,
+                        content = newRefreshToken
+                    )
+                )
 
-                return RefreshResponse(accessToken = newAccessToken, refreshToken = newRefreshToken)
+                return RefreshResponse(
+                    accessToken = newAccessToken,
+                    refreshToken = newRefreshToken
+                )
             } else {
                 tokenRepository.deleteByUserId(it.id)
                 throw InvalidAccessException()
