@@ -34,6 +34,7 @@ class AuthenticationServiceTest : BehaviorSpec() {
         Given("해당 아이디를 가진 유저가 존재하고 비밀번호가 일치하는 경우") {
             val user = createUser().also {
                 coEvery { userClient.findByUsername(any()) } returns it
+                coEvery { tokenRepository.save(any()) } returns true
             }
 
             When("로그인을 시도하면") {
@@ -50,12 +51,18 @@ class AuthenticationServiceTest : BehaviorSpec() {
         Given("해당 아이디를 가진 유저가 존재하지만 비밀번호가 일치하지 않는 경우") {
             val user = createUser().also {
                 coEvery { userClient.findByUsername(any()) } returns it
+                coEvery { tokenRepository.save(any()) } returns false
             }
 
             When("로그인을 시도하면") {
                 Then("예외가 발생한다.") {
                     shouldThrow<PasswordNotMatchException> {
-                        authenticationService.login(LoginRequest(username = user.username, password = INVALID_PASSWORD))
+                        authenticationService.login(
+                            LoginRequest(
+                                username = user.username,
+                                password = INVALID_PASSWORD
+                            )
+                        )
                     }
                 }
             }
@@ -63,11 +70,17 @@ class AuthenticationServiceTest : BehaviorSpec() {
 
         Given("해당 아이디를 가진 유저가 존재하지 않는 경우") {
             coEvery { userClient.findByUsername(any()) } throws UserNotFoundException()
+            coEvery { tokenRepository.save(any()) } returns false
 
             When("로그인을 시도하면") {
                 Then("예외가 발생한다.") {
                     shouldThrow<UserNotFoundException> {
-                        authenticationService.login(LoginRequest(username = INVALID_USERNAME, password = PASSWORD))
+                        authenticationService.login(
+                            LoginRequest(
+                                username = INVALID_USERNAME,
+                                password = PASSWORD
+                            )
+                        )
                     }
                 }
             }
