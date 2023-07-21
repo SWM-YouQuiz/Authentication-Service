@@ -29,10 +29,7 @@ class TokenRepositoryTest : ExpectSpec() {
     }
 
     override suspend fun beforeContainer(testCase: TestCase) {
-        redisTemplate.execute {
-            it.serverCommands()
-                .flushAll()
-        }.awaitSingle()
+        redisTemplate.execute { it.serverCommands().flushAll() }.awaitSingle()
     }
 
     init {

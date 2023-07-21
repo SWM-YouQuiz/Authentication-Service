@@ -20,7 +20,9 @@ import com.youquiz.authentication.util.BaseControllerTest
 import com.youquiz.authentication.util.desc
 import com.youquiz.authentication.util.errorResponseFields
 import com.youquiz.authentication.util.withMockUser
+import io.mockk.Runs
 import io.mockk.coEvery
+import io.mockk.just
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest
 import org.springframework.restdocs.operation.preprocess.Preprocessors.*
 import org.springframework.restdocs.payload.PayloadDocumentation.requestFields
@@ -151,7 +153,7 @@ class AuthenticationControllerTest : BaseControllerTest() {
 
         describe("logout()은") {
             context("요청을 보낸 유저가 로그인 상태인 경우") {
-                coEvery { authenticationService.logout(any()) } returns Unit
+                coEvery { authenticationService.logout(any()) } just Runs
                 withMockUser()
 
                 it("상태 코드 200을 반환한다.") {
@@ -167,7 +169,7 @@ class AuthenticationControllerTest : BaseControllerTest() {
             }
 
             context("요청을 보낸 유저가 로그인 상태가 아닌 경우") {
-                coEvery { authenticationService.logout(any()) } returns Unit
+                coEvery { authenticationService.logout(any()) } just Runs
 
                 it("상태 코드 401을 반환한다.") {
                     webClient
