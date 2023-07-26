@@ -2,7 +2,7 @@ spring:
   data:
     redis:
       host: ${REDIS_HOST}
-      port: 6379
+      port: ${REDIS_PORT}
 jwt:
   secretKey: ${JWT_SECRET}
   accessTokenExpire: ${JWT_ACCESS_EXPIRE}
