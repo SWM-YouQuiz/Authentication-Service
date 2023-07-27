@@ -1,4 +1,9 @@
+spring:
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
 jwt:
-  secretKey: dasdsaddsaldldasjdjdajkdjkdsakjldasjkldkjldas
-  accessTokenExpire: 5
-  refreshTokenExpire: 10
+  secretKey: ${JWT_SECRET}
+  accessTokenExpire: ${JWT_ACCESS_EXPIRE}
+  refreshTokenExpire: ${JWT_REFRESH_EXPIRE}
