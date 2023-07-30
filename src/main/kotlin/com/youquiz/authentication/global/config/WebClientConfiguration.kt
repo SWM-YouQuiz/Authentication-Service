@@ -9,5 +9,3 @@ class WebClientConfiguration {
     @Bean
     fun webClient(): WebClient = WebClient.create()
 }
-
-const val userServiceClient = "user-service"
