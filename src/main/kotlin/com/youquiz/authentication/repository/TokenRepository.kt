@@ -14,7 +14,7 @@ class TokenRepository(
     @Value("\${jwt.refreshTokenExpire}")
     private val expire: Long
 ) {
-    suspend fun findByUserId(userId: Long): Token? =
+    suspend fun findByUserId(userId: String): Token? =
         redisTemplate.opsForValue()
             .get(getKey(userId))
             .awaitSingleOrNull()?.let {
@@ -31,10 +31,10 @@ class TokenRepository(
                 .awaitSingle()
         }
 
-    suspend fun deleteByUserId(userId: Long): Boolean =
+    suspend fun deleteByUserId(userId: String): Boolean =
         redisTemplate.opsForValue()
             .delete(getKey(userId))
             .awaitSingle()
 
-    private fun getKey(id: Long): String = "refreshToken:$id"
+    private fun getKey(id: String): String = "refreshToken:$id"
 }

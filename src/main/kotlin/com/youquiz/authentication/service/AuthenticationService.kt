@@ -48,7 +48,7 @@ class AuthenticationService(
         } else throw PasswordNotMatchException()
     }
 
-    suspend fun logout(userId: Long) {
+    suspend fun logout(userId: String) {
         tokenRepository.deleteByUserId(userId)
     }
 
