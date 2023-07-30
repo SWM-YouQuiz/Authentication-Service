@@ -12,6 +12,8 @@ import com.youquiz.authentication.exception.InvalidAccessException
 import com.youquiz.authentication.exception.PasswordNotMatchException
 import com.youquiz.authentication.exception.TokenNotFoundException
 import com.youquiz.authentication.repository.TokenRepository
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
@@ -23,14 +25,18 @@ class AuthenticationService(
     private val jwtProvider: JwtProvider,
     private val passwordEncoder: PasswordEncoder
 ) {
-    suspend fun login(request: LoginRequest): LoginResponse {
-        val user = userClient.findByUsername(request.username)
+    suspend fun login(request: LoginRequest): LoginResponse = coroutineScope {
+        val getPasswordByUsernameDeferred = async { userClient.getPasswordByUsername(request.username) }
+        val findByUsernameDeferred = async { userClient.findByUsername(request.username) }
 
-        if (passwordEncoder.matches(request.password, user.password)) {
-            user.run {
+        val getUserPasswordByUsernameResponse = getPasswordByUsernameDeferred.await()
+        val findUserByUsernameResponse = findByUsernameDeferred.await()
+
+        if (passwordEncoder.matches(request.password, getUserPasswordByUsernameResponse.password)) {
+            run {
                 DefaultJwtAuthentication(
-                    id = id,
-                    authorities = listOf(SimpleGrantedAuthority(role.name))
+                    id = findUserByUsernameResponse.id,
+                    authorities = listOf(SimpleGrantedAuthority(findUserByUsernameResponse.role))
                 )
             }.let {
                 val accessToken = jwtProvider.createAccessToken(it)
@@ -43,7 +49,7 @@ class AuthenticationService(
                     )
                 )
 
-                return LoginResponse(accessToken = accessToken, refreshToken = refreshToken)
+                LoginResponse(accessToken = accessToken, refreshToken = refreshToken)
             }
         } else throw PasswordNotMatchException()
     }
