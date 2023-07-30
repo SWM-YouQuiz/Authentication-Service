@@ -9,16 +9,18 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority
 val SECRET_KEY = (1..100).map { ('a'..'z').random() }.joinToString("")
 const val ACCESS_TOKEN_EXPIRE = 5L
 const val REFRESH_TOKEN_EXPIRE = 10L
-val AUTHORITIES = listOf(SimpleGrantedAuthority(ROLE.name))
+val AUTHORITIES = listOf(SimpleGrantedAuthority(ROLE))
 const val INVALID_TOKEN = "test"
 val jwtProvider = JwtConfiguration().jwtProvider(
     secretKey = SECRET_KEY,
     accessTokenExpire = ACCESS_TOKEN_EXPIRE,
     refreshTokenExpire = REFRESH_TOKEN_EXPIRE
 )
+val ACCESS_TOKEN = jwtProvider.createAccessToken(createJwtAuthentication())
+val REFRESH_TOKEN = jwtProvider.createRefreshToken(createJwtAuthentication())
 
 fun createJwtAuthentication(
-    id: Long = ID,
+    id: String = ID,
     authorities: List<GrantedAuthority> = AUTHORITIES
 ): DefaultJwtAuthentication =
     DefaultJwtAuthentication(
@@ -27,7 +29,7 @@ fun createJwtAuthentication(
     )
 
 fun createToken(
-    userId: Long = ID,
+    userId: String = ID,
     content: String = jwtProvider.createRefreshToken(createJwtAuthentication())
 ): Token = Token(
     userId = userId,
