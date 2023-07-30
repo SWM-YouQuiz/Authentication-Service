@@ -3,15 +3,16 @@ package com.youquiz.authentication.controller
 import com.epages.restdocs.apispec.WebTestClientRestDocumentationWrapper
 import com.ninjasquad.springmockk.MockkBean
 import com.youquiz.authentication.config.SecurityTestConfiguration
-import com.youquiz.authentication.dto.LoginRequest
 import com.youquiz.authentication.dto.LoginResponse
-import com.youquiz.authentication.dto.RefreshRequest
 import com.youquiz.authentication.dto.RefreshResponse
 import com.youquiz.authentication.exception.InvalidAccessException
 import com.youquiz.authentication.exception.PasswordNotMatchException
 import com.youquiz.authentication.exception.TokenNotFoundException
 import com.youquiz.authentication.exception.UserNotFoundException
-import com.youquiz.authentication.fixture.*
+import com.youquiz.authentication.fixture.createLoginRequest
+import com.youquiz.authentication.fixture.createLoginResponse
+import com.youquiz.authentication.fixture.createRefreshRequest
+import com.youquiz.authentication.fixture.createRefreshResponse
 import com.youquiz.authentication.global.dto.ErrorResponse
 import com.youquiz.authentication.handler.AuthenticationHandler
 import com.youquiz.authentication.router.AuthenticationRouter
@@ -35,38 +36,18 @@ class AuthenticationControllerTest : BaseControllerTest() {
     @MockkBean
     private lateinit var authenticationService: AuthenticationService
 
-    private val loginRequest = LoginRequest(
-        username = USERNAME,
-        password = PASSWORD
-    )
-
     private val loginRequestFields = listOf(
         "username" desc "아이디",
         "password" desc "패스워드"
     )
 
-    private val loginResponse = LoginResponse(
-        accessToken = jwtProvider.createAccessToken(createJwtAuthentication()),
-        refreshToken = jwtProvider.createRefreshToken(createJwtAuthentication())
-    )
-
-    private val refreshRequest = RefreshRequest(
-        userId = ID,
-        refreshToken = jwtProvider.createRefreshToken(createJwtAuthentication())
-    )
-
-    private val refreshResponse = RefreshResponse(
-        accessToken = jwtProvider.createAccessToken(createJwtAuthentication()),
-        refreshToken = jwtProvider.createRefreshToken(createJwtAuthentication())
+    private val refreshRequestFields = listOf(
+        "userId" desc "유저 식별자",
+        "refreshToken" desc "리프레쉬 토큰"
     )
 
     private val loginResponseFields = listOf(
         "accessToken" desc "액세스 토큰",
-        "refreshToken" desc "리프레쉬 토큰"
-    )
-
-    private val refreshRequestFields = listOf(
-        "userId" desc "유저 식별자",
         "refreshToken" desc "리프레쉬 토큰"
     )
 
@@ -78,13 +59,13 @@ class AuthenticationControllerTest : BaseControllerTest() {
     init {
         describe("login()은") {
             context("해당 아이디를 가진 유저가 존재하고 비밀번호가 일치하는 경우") {
-                coEvery { authenticationService.login(any()) } returns loginResponse
+                coEvery { authenticationService.login(any()) } returns createLoginResponse()
 
                 it("상태 코드 200과 LoginResponse를 반환한다.") {
                     webClient
                         .post()
                         .uri("/auth/login")
-                        .bodyValue(loginRequest)
+                        .bodyValue(createLoginRequest())
                         .exchange()
                         .expectStatus()
                         .isOk
@@ -108,7 +89,7 @@ class AuthenticationControllerTest : BaseControllerTest() {
                     webClient
                         .post()
                         .uri("/auth/login")
-                        .bodyValue(loginRequest)
+                        .bodyValue(createLoginRequest())
                         .exchange()
                         .expectStatus()
                         .isBadRequest
@@ -132,7 +113,7 @@ class AuthenticationControllerTest : BaseControllerTest() {
                     webClient
                         .post()
                         .uri("/auth/login")
-                        .bodyValue(loginRequest)
+                        .bodyValue(createLoginRequest())
                         .exchange()
                         .expectStatus()
                         .isNotFound
@@ -186,13 +167,13 @@ class AuthenticationControllerTest : BaseControllerTest() {
 
         describe("refresh()는") {
             context("요청을 보낸 유저가 로그인 상태인 경우") {
-                coEvery { authenticationService.refresh(any()) } returns refreshResponse
+                coEvery { authenticationService.refresh(any()) } returns createRefreshResponse()
 
                 it("상태 코드 200과 refreshResponse를 반환한다.") {
                     webClient
                         .post()
                         .uri("/auth/refresh")
-                        .bodyValue(refreshRequest)
+                        .bodyValue(createRefreshRequest())
                         .exchange()
                         .expectStatus()
                         .isOk
@@ -216,7 +197,7 @@ class AuthenticationControllerTest : BaseControllerTest() {
                     webClient
                         .post()
                         .uri("/auth/refresh")
-                        .bodyValue(refreshRequest)
+                        .bodyValue(createRefreshRequest())
                         .exchange()
                         .expectStatus()
                         .isNotFound
@@ -240,7 +221,7 @@ class AuthenticationControllerTest : BaseControllerTest() {
                     webClient
                         .post()
                         .uri("/auth/refresh")
-                        .bodyValue(refreshRequest)
+                        .bodyValue(createRefreshRequest())
                         .exchange()
                         .expectStatus()
                         .isForbidden
