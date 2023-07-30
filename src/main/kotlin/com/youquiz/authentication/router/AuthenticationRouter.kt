@@ -12,7 +12,7 @@ class AuthenticationRouter {
     @Bean
     fun authenticationRoutes(handler: AuthenticationHandler): RouterFunction<ServerResponse> =
         coRouter {
-            "/auth".nest {
+            "/api/auth".nest {
                 POST("/login", handler::login)
                 GET("/logout", handler::logout)
                 POST("/refresh", handler::refresh)

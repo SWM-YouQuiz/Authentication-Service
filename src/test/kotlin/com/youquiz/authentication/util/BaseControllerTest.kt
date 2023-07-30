@@ -23,7 +23,7 @@ abstract class BaseControllerTest : DescribeSpec() {
     override suspend fun beforeSpec(spec: Spec) {
         webClient = WebTestClient.bindToApplicationContext(applicationContext)
             .configureClient()
-            .baseUrl("http://localhost:8080")
+            .baseUrl("/api")
             .filter(WebTestClientRestDocumentation.documentationConfiguration(restDocumentation))
             .build()
             .mutateWith(SecurityMockServerConfigurers.csrf())
