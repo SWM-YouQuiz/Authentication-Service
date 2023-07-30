@@ -1,0 +1,17 @@
+server:
+  port: 8081
+spring:
+  data:
+    redis:
+      host: localhost
+      port: 6379
+jwt:
+  secretKey: dsaijodajadsjdsalkjadslkjadsljlajkdslkjadslkjadsjlklsad
+  accessTokenExpire: 30
+  refreshTokenExpire: 60
+url:
+  frontend: http://localhost:3000
+  service:
+    auth: http://localhost:8081
+    user: http://localhost:8082
+    quiz: http://localhost:8083
