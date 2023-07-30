@@ -12,7 +12,7 @@ class WebFluxConfiguration(
 ) : WebFluxConfigurer {
     override fun addCorsMappings(registry: CorsRegistry) {
         registry.addMapping("/**").apply {
-            allowedOrigins("*")
+            allowedOriginPatterns("*")
             allowCredentials(true)
         }
     }
