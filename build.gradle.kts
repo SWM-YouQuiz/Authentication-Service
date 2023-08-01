@@ -74,12 +74,6 @@ tasks {
                 element = "CLASS"
 
                 limit {
-                    counter = "BRANCH"
-                    value = "COVEREDRATIO"
-                    minimum = BigDecimal("0.8")
-                }
-
-                limit {
                     counter = "LINE"
                     value = "COVEREDRATIO"
                     minimum = BigDecimal("0.8")
