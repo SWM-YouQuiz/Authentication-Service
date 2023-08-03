@@ -1,8 +1,6 @@
 package com.youquiz.authentication.service
 
 import com.youquiz.authentication.adapter.client.UserClient
-import com.youquiz.authentication.dto.LoginRequest
-import com.youquiz.authentication.dto.RefreshRequest
 import com.youquiz.authentication.exception.InvalidAccessException
 import com.youquiz.authentication.exception.PasswordNotMatchException
 import com.youquiz.authentication.exception.TokenNotFoundException
@@ -32,17 +30,12 @@ class AuthenticationServiceTest : BehaviorSpec() {
 
     init {
         Given("해당 아이디를 가진 유저가 존재하고 비밀번호가 일치하는 경우") {
-            coEvery { userClient.findByUsername(any()) } returns createFindUserByUsernameResponse()
+            coEvery { userClient.getUserByUsername(any()) } returns createFindUserByUsernameResponse()
             coEvery { userClient.getPasswordByUsername(any()) } returns createGetUserPasswordByUsernameResponse()
             coEvery { tokenRepository.save(any()) } returns true
 
             When("로그인을 시도하면") {
-                val loginResponse = authenticationService.login(
-                    LoginRequest(
-                        username = USERNAME,
-                        password = PASSWORD
-                    )
-                )
+                val loginResponse = authenticationService.login(createLoginRequest())
 
                 Then("해당 유저에 대한 액세스 토큰과 리프레쉬 토큰이 발급된다.") {
                     jwtProvider.getAuthentication(loginResponse.accessToken).id shouldBe ID
@@ -52,38 +45,28 @@ class AuthenticationServiceTest : BehaviorSpec() {
         }
 
         Given("해당 아이디를 가진 유저가 존재하지만 비밀번호가 일치하지 않는 경우") {
-            coEvery { userClient.findByUsername(any()) } returns createFindUserByUsernameResponse()
+            coEvery { userClient.getUserByUsername(any()) } returns createFindUserByUsernameResponse()
             coEvery { userClient.getPasswordByUsername(any()) } returns createGetUserPasswordByUsernameResponse()
             coEvery { tokenRepository.save(any()) } returns false
 
             When("로그인을 시도하면") {
                 Then("예외가 발생한다.") {
                     shouldThrow<PasswordNotMatchException> {
-                        authenticationService.login(
-                            LoginRequest(
-                                username = USERNAME,
-                                password = INVALID_PASSWORD
-                            )
-                        )
+                        authenticationService.login(createLoginRequest(password = INVALID_PASSWORD))
                     }
                 }
             }
         }
 
         Given("해당 아이디를 가진 유저가 존재하지 않는 경우") {
-            coEvery { userClient.findByUsername(any()) } throws UserNotFoundException()
+            coEvery { userClient.getUserByUsername(any()) } throws UserNotFoundException()
             coEvery { userClient.getPasswordByUsername(any()) } throws UserNotFoundException()
             coEvery { tokenRepository.save(any()) } returns false
 
             When("로그인을 시도하면") {
                 Then("예외가 발생한다.") {
                     shouldThrow<UserNotFoundException> {
-                        authenticationService.login(
-                            LoginRequest(
-                                username = INVALID_USERNAME,
-                                password = PASSWORD
-                            )
-                        )
+                        authenticationService.login(createLoginRequest(username = INVALID_USERNAME))
                     }
                 }
             }
@@ -103,12 +86,7 @@ class AuthenticationServiceTest : BehaviorSpec() {
             }
 
             When("유효한 리프레쉬 토큰으로 로그인 유지를 시도하면") {
-                val refreshResponse = authenticationService.refresh(
-                    RefreshRequest(
-                        userId = ID,
-                        refreshToken = jwtProvider.createRefreshToken(createJwtAuthentication())
-                    )
-                )
+                val refreshResponse = authenticationService.refresh(createRefreshRequest())
 
                 Then("해당 유저에 대한 액세스 토큰과 리프레쉬 토큰이 발급된다.") {
                     jwtProvider.getAuthentication(refreshResponse.accessToken).id shouldBe ID
@@ -119,12 +97,7 @@ class AuthenticationServiceTest : BehaviorSpec() {
             When("유효하지 않은 리프레쉬 토큰으로 로그인 유지를 시도하면") {
                 Then("예외가 발생한다.") {
                     shouldThrow<InvalidAccessException> {
-                        authenticationService.refresh(
-                            RefreshRequest(
-                                userId = ID,
-                                refreshToken = INVALID_TOKEN
-                            )
-                        )
+                        authenticationService.refresh(createRefreshRequest(refreshToken = INVALID_TOKEN))
                     }
                 }
             }
@@ -137,12 +110,7 @@ class AuthenticationServiceTest : BehaviorSpec() {
             When("리프레쉬 토큰으로 로그인 유지를 시도하면") {
                 Then("예외가 발생한다.") {
                     shouldThrow<TokenNotFoundException> {
-                        authenticationService.refresh(
-                            RefreshRequest(
-                                userId = ID,
-                                refreshToken = jwtProvider.createRefreshToken(createJwtAuthentication())
-                            )
-                        )
+                        authenticationService.refresh(createRefreshRequest())
                     }
                 }
             }

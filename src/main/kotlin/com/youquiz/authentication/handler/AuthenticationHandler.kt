@@ -1,8 +1,8 @@
 package com.youquiz.authentication.handler
 
-import com.github.jwt.authentication.JwtAuthentication
 import com.youquiz.authentication.dto.LoginRequest
 import com.youquiz.authentication.dto.RefreshRequest
+import com.youquiz.authentication.global.config.awaitAuthentication
 import com.youquiz.authentication.service.AuthenticationService
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.server.*
@@ -17,8 +17,9 @@ class AuthenticationHandler(
         }
 
     suspend fun logout(request: ServerRequest): ServerResponse =
-        with(request.awaitPrincipal() as JwtAuthentication) {
+        with(request.awaitAuthentication()) {
             authenticationService.logout(id)
+
             ServerResponse.ok().buildAndAwait()
         }
 

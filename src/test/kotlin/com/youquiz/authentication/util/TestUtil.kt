@@ -5,6 +5,7 @@ import org.springframework.restdocs.payload.FieldDescriptor
 import org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath
 import org.springframework.restdocs.request.ParameterDescriptor
 import org.springframework.restdocs.request.RequestDocumentation.parameterWithName
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
 
 infix fun String.desc(description: String): FieldDescriptor =
@@ -15,6 +16,11 @@ infix fun String.paramDesc(description: String): ParameterDescriptor =
 
 fun withMockUser() {
     SecurityContextHolder.getContext().authentication = createJwtAuthentication()
+}
+
+fun withMockAdmin() {
+    SecurityContextHolder.getContext().authentication =
+        createJwtAuthentication(authorities = listOf(SimpleGrantedAuthority("ADMIN")))
 }
 
 val errorResponseFields = listOf(

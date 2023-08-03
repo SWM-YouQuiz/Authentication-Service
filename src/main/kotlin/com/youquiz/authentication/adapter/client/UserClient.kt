@@ -1,7 +1,7 @@
 package com.youquiz.authentication.adapter.client
 
-import com.youquiz.authentication.dto.FindUserByUsernameResponse
-import com.youquiz.authentication.dto.GetUserPasswordByUsernameResponse
+import com.youquiz.authentication.dto.GetPasswordByUsernameResponse
+import com.youquiz.authentication.dto.GetUserByUsernameResponse
 import com.youquiz.authentication.exception.UserNotFoundException
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
@@ -15,17 +15,17 @@ class UserClient(
     @Value("\${url.service.user}")
     private val url: String
 ) {
-    suspend fun findByUsername(username: String): FindUserByUsernameResponse =
+    suspend fun getUserByUsername(username: String): GetUserByUsernameResponse =
         webClient.get()
             .uri("$url/api/user/username/{username}", username)
             .retrieve()
             .onStatus(HttpStatus.NOT_FOUND::equals) { throw UserNotFoundException() }
-            .awaitBody<FindUserByUsernameResponse>()
+            .awaitBody<GetUserByUsernameResponse>()
 
-    suspend fun getPasswordByUsername(username: String): GetUserPasswordByUsernameResponse =
+    suspend fun getPasswordByUsername(username: String): GetPasswordByUsernameResponse =
         webClient.get()
             .uri("$url/api/user/username/{username}/password", username)
             .retrieve()
             .onStatus(HttpStatus.NOT_FOUND::equals) { throw UserNotFoundException() }
-            .awaitBody<GetUserPasswordByUsernameResponse>()
+            .awaitBody<GetPasswordByUsernameResponse>()
 }

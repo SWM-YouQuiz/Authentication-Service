@@ -27,16 +27,15 @@ class AuthenticationService(
 ) {
     suspend fun login(request: LoginRequest): LoginResponse = coroutineScope {
         val getPasswordByUsernameDeferred = async { userClient.getPasswordByUsername(request.username) }
-        val findByUsernameDeferred = async { userClient.findByUsername(request.username) }
-
+        val findByUsernameDeferred = async { userClient.getUserByUsername(request.username) }
         val getUserPasswordByUsernameResponse = getPasswordByUsernameDeferred.await()
         val findUserByUsernameResponse = findByUsernameDeferred.await()
 
         if (passwordEncoder.matches(request.password, getUserPasswordByUsernameResponse.password)) {
-            run {
+            findUserByUsernameResponse.run {
                 DefaultJwtAuthentication(
-                    id = findUserByUsernameResponse.id,
-                    authorities = listOf(SimpleGrantedAuthority(findUserByUsernameResponse.role))
+                    id = id,
+                    authorities = listOf(SimpleGrantedAuthority(role))
                 )
             }.let {
                 val accessToken = jwtProvider.createAccessToken(it)
@@ -79,6 +78,7 @@ class AuthenticationService(
                 )
             } else {
                 tokenRepository.deleteByUserId(it.id)
+
                 throw InvalidAccessException()
             }
         }

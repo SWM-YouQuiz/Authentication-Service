@@ -2,7 +2,6 @@ package com.youquiz.authentication.controller
 
 import com.epages.restdocs.apispec.WebTestClientRestDocumentationWrapper
 import com.ninjasquad.springmockk.MockkBean
-import com.youquiz.authentication.config.SecurityTestConfiguration
 import com.youquiz.authentication.dto.LoginResponse
 import com.youquiz.authentication.dto.RefreshResponse
 import com.youquiz.authentication.exception.InvalidAccessException
@@ -28,9 +27,7 @@ import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest
 import org.springframework.restdocs.operation.preprocess.Preprocessors.*
 import org.springframework.restdocs.payload.PayloadDocumentation.requestFields
 import org.springframework.restdocs.payload.PayloadDocumentation.responseFields
-import org.springframework.test.context.ContextConfiguration
 
-@ContextConfiguration(classes = [SecurityTestConfiguration::class])
 @WebFluxTest(AuthenticationHandler::class, AuthenticationRouter::class)
 class AuthenticationControllerTest : BaseControllerTest() {
     @MockkBean

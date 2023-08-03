@@ -2,7 +2,7 @@ package com.youquiz.authentication.dto
 
 import java.time.LocalDateTime
 
-data class FindUserByUsernameResponse(
+data class GetUserByUsernameResponse(
     val id: String,
     val username: String,
     val nickname: String,

@@ -87,12 +87,15 @@ tasks {
 
                 excludes = listOf(
                     "**.*Application*",
+                    "**.*Configuration*",
                     "**.*Request*",
                     "**.*Response*",
-                    "**.*Configuration*",
                     "**.*Exception*",
-                    "**.*LogUtil*",
-                    "**.*Client*"
+                    "**.*Util*",
+                    "**.*Client*",
+                    "**.*Producer*",
+                    "**.*Consumer*",
+                    "**.*Event*"
                 )
             }
         }

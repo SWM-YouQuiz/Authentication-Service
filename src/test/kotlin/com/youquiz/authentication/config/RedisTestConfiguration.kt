@@ -15,8 +15,5 @@ class RedisTestConfiguration {
 
     @Bean
     fun reactiveRedisTemplate(): ReactiveRedisTemplate<String, String> =
-        ReactiveRedisTemplate(
-            redisConnectionFactory(),
-            RedisSerializationContext.string()
-        )
+        ReactiveRedisTemplate(redisConnectionFactory(), RedisSerializationContext.string())
 }

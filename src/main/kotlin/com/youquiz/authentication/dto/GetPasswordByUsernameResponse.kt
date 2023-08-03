@@ -1,5 +1,5 @@
 package com.youquiz.authentication.dto
 
-data class GetUserPasswordByUsernameResponse(
+data class GetPasswordByUsernameResponse(
     val password: String
 )

@@ -13,8 +13,8 @@ class AuthenticationRouter {
     fun authenticationRoutes(handler: AuthenticationHandler): RouterFunction<ServerResponse> =
         coRouter {
             "/api/auth".nest {
-                POST("/login", handler::login)
                 GET("/logout", handler::logout)
+                POST("/login", handler::login)
                 POST("/refresh", handler::refresh)
             }
         }

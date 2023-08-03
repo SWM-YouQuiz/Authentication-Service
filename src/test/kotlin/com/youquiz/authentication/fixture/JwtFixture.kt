@@ -30,7 +30,7 @@ fun createJwtAuthentication(
 
 fun createToken(
     userId: String = ID,
-    content: String = jwtProvider.createRefreshToken(createJwtAuthentication())
+    content: String = REFRESH_TOKEN
 ): Token = Token(
     userId = userId,
     content = content
