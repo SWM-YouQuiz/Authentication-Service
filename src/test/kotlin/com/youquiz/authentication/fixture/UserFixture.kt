@@ -11,12 +11,12 @@ const val PASSWORD = "root"
 const val ROLE = "USER"
 const val ALLOW_PUSH = true
 val CREATED_DATE = LocalDateTime.now()!!
-val CORRECT_QUIZ_IDS = mutableSetOf<String>()
-val INCORRECT_QUIZ_IDS = mutableSetOf<String>()
-val LIKED_QUIZ_IDS = mutableSetOf<String>()
+val CORRECT_QUIZ_IDS = setOf("quiz_1")
+val INCORRECT_QUIZ_IDS = setOf("quiz_2")
+val LIKED_QUIZ_IDS = setOf("quiz_3")
 
-const val INVALID_USERNAME = "test"
-const val INVALID_PASSWORD = "test"
+const val INVALID_USERNAME = "invalid_username"
+const val INVALID_PASSWORD = "invalid_password"
 
 fun createGetUserPasswordByUsernameResponse(
     password: String = PASSWORD
