@@ -4,10 +4,10 @@ import com.github.jwt.authentication.DefaultJwtAuthentication
 import com.github.jwt.core.JwtProvider
 import com.youquiz.authentication.adapter.client.UserClient
 import com.youquiz.authentication.domain.Token
-import com.youquiz.authentication.dto.LoginRequest
-import com.youquiz.authentication.dto.LoginResponse
-import com.youquiz.authentication.dto.RefreshRequest
-import com.youquiz.authentication.dto.RefreshResponse
+import com.youquiz.authentication.dto.request.LoginRequest
+import com.youquiz.authentication.dto.request.RefreshRequest
+import com.youquiz.authentication.dto.response.LoginResponse
+import com.youquiz.authentication.dto.response.RefreshResponse
 import com.youquiz.authentication.exception.InvalidAccessException
 import com.youquiz.authentication.exception.PasswordNotMatchException
 import com.youquiz.authentication.exception.TokenNotFoundException

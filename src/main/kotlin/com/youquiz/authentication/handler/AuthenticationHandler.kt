@@ -1,7 +1,7 @@
 package com.youquiz.authentication.handler
 
-import com.youquiz.authentication.dto.LoginRequest
-import com.youquiz.authentication.dto.RefreshRequest
+import com.youquiz.authentication.dto.request.LoginRequest
+import com.youquiz.authentication.dto.request.RefreshRequest
 import com.youquiz.authentication.global.config.awaitAuthentication
 import com.youquiz.authentication.service.AuthenticationService
 import org.springframework.stereotype.Component

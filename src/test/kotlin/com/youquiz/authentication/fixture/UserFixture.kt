@@ -1,7 +1,7 @@
 package com.youquiz.authentication.fixture
 
-import com.youquiz.authentication.dto.GetPasswordByUsernameResponse
-import com.youquiz.authentication.dto.GetUserByUsernameResponse
+import com.youquiz.authentication.dto.response.GetPasswordByUsernameResponse
+import com.youquiz.authentication.dto.response.GetUserByUsernameResponse
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import java.time.LocalDateTime
 

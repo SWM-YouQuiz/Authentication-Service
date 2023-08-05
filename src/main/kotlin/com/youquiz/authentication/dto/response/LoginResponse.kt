@@ -1,4 +1,4 @@
-package com.youquiz.authentication.dto
+package com.youquiz.authentication.dto.response
 
 data class LoginResponse(
     val accessToken: String,

@@ -1,7 +1,7 @@
 package com.youquiz.authentication.adapter.client
 
-import com.youquiz.authentication.dto.GetPasswordByUsernameResponse
-import com.youquiz.authentication.dto.GetUserByUsernameResponse
+import com.youquiz.authentication.dto.response.GetPasswordByUsernameResponse
+import com.youquiz.authentication.dto.response.GetUserByUsernameResponse
 import com.youquiz.authentication.exception.UserNotFoundException
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus

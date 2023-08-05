@@ -1,9 +1,9 @@
 package com.youquiz.authentication.fixture
 
-import com.youquiz.authentication.dto.LoginRequest
-import com.youquiz.authentication.dto.LoginResponse
-import com.youquiz.authentication.dto.RefreshRequest
-import com.youquiz.authentication.dto.RefreshResponse
+import com.youquiz.authentication.dto.request.LoginRequest
+import com.youquiz.authentication.dto.request.RefreshRequest
+import com.youquiz.authentication.dto.response.LoginResponse
+import com.youquiz.authentication.dto.response.RefreshResponse
 
 fun createLoginRequest(
     username: String = USERNAME,

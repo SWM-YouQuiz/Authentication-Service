@@ -2,8 +2,8 @@ package com.youquiz.authentication.controller
 
 import com.epages.restdocs.apispec.WebTestClientRestDocumentationWrapper
 import com.ninjasquad.springmockk.MockkBean
-import com.youquiz.authentication.dto.LoginResponse
-import com.youquiz.authentication.dto.RefreshResponse
+import com.youquiz.authentication.dto.response.LoginResponse
+import com.youquiz.authentication.dto.response.RefreshResponse
 import com.youquiz.authentication.exception.InvalidAccessException
 import com.youquiz.authentication.exception.PasswordNotMatchException
 import com.youquiz.authentication.exception.TokenNotFoundException

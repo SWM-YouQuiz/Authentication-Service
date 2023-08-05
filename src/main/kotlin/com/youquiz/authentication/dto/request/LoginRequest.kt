@@ -1,4 +1,4 @@
-package com.youquiz.authentication.dto
+package com.youquiz.authentication.dto.request
 
 data class LoginRequest(
     val username: String,
