@@ -52,6 +52,7 @@ dependencies {
     testImplementation("com.ninja-squad:springmockk:3.0.1")
     testImplementation("com.epages:restdocs-api-spec-webtestclient:0.17.1")
     testImplementation("com.epages:restdocs-api-spec:0.17.1")
+    testImplementation("it.ozimov:embedded-redis:0.7.2")
 }
 
 tasks {
