@@ -10,7 +10,7 @@ plugins {
     kotlin("plugin.spring") version "1.8.22"
 }
 
-group = "com.youquiz"
+group = "com.quizit"
 version = "0.0.1"
 
 java {
@@ -66,6 +66,10 @@ tasks {
         useJUnitPlatform()
 
         finalizedBy(jacocoTestReport, withType<OpenApi3Task>())
+    }
+
+    bootJar {
+        archiveFileName.set("auth-service.jar")
     }
 
     jacocoTestCoverageVerification {
@@ -124,9 +128,8 @@ sonarqube {
 }
 
 openapi3 {
-    setServer("")
-    title = ""
-    description = ""
+    setServer("auth-service")
+    title = "Authentication Service API"
     version = "v1"
     format = "yml"
     outputFileNamePrefix = "api"
