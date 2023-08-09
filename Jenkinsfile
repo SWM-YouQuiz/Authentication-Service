@@ -76,6 +76,14 @@ pipeline{
                     }
                 }
             }
+            post{
+                failure{
+                    slackSend(color: '#FF0000', message: "FAIL : Docker 이미지 Push 실패 '${env.JOB_NAME} [${env.BUILD_NUMBER}]' tag: ${env.tag}")
+                }
+                success{
+                    slackSend(color: '#0AC9FF', message: "SUCCESS : Docker 이미지 Push 성공 '${env.JOB_NAME} [${env.BUILD_NUMBER}]' tag: ${env.tag}")
+                }
+            }
         }
         stage('Git Manifest Edit & Push'){
             steps{
