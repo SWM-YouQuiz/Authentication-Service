@@ -39,7 +39,7 @@ pipeline{
     stages{
         stage('Git Clone'){
             steps{
-                git url: 'https://github.com/SWM-YouQuiz/Auth-Service.git',
+                git url: 'https://github.com/SWM-YouQuiz/Authentication-Service.git',
                     branch: 'dev',
                     credentialsId: "github_personal_access_token"
                 script{
