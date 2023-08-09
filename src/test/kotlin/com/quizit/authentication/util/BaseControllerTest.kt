@@ -25,7 +25,6 @@ abstract class BaseControllerTest : DescribeSpec() {
     override suspend fun beforeSpec(spec: Spec) {
         webClient = WebTestClient.bindToApplicationContext(applicationContext)
             .configureClient()
-            .baseUrl("/api")
             .filter(WebTestClientRestDocumentation.documentationConfiguration(restDocumentation))
             .build()
     }
