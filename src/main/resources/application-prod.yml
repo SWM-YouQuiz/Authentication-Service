@@ -1,4 +1,6 @@
 spring:
+  webflux:
+    base-path: /api/quiz
   data:
     redis:
       host: ${REDIS_HOST}
