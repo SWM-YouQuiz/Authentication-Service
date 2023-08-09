@@ -1,4 +1,6 @@
 spring:
+  webflux:
+    base-path: /api/auth
   data:
     redis:
       host: ${REDIS_HOST}
