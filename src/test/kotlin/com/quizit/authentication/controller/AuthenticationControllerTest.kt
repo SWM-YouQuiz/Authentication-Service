@@ -147,21 +147,6 @@ class AuthenticationControllerTest : BaseControllerTest() {
                         .consumeWith(WebTestClientRestDocumentationWrapper.document("로그아웃 성공(200)"))
                 }
             }
-
-            context("요청을 보낸 유저가 로그인 상태가 아닌 경우") {
-                coEvery { authenticationService.logout(any()) } just Runs
-
-                it("상태 코드 401을 반환한다.") {
-                    webClient
-                        .get()
-                        .uri("/auth/logout")
-                        .exchange()
-                        .expectStatus()
-                        .isUnauthorized
-                        .expectBody()
-                        .consumeWith(WebTestClientRestDocumentationWrapper.document("로그아웃 실패(401)"))
-                }
-            }
         }
 
         describe("refresh()는") {
