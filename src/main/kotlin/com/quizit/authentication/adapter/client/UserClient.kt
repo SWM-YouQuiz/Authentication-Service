@@ -14,7 +14,7 @@ class UserClient(
 ) {
     suspend fun getUserByUsername(username: String): com.quizit.authentication.dto.response.GetUserByUsernameResponse =
         webClient.get()
-            .uri("$url/api/user/username/{username}", username)
+            .uri("$url/api/user/user/username/{username}", username)
             .retrieve()
             .onStatus(
                 HttpStatus.NOT_FOUND::equals
@@ -25,7 +25,7 @@ class UserClient(
         username: String
     ): com.quizit.authentication.dto.response.GetPasswordByUsernameResponse =
         webClient.get()
-            .uri("$url/api/user/username/{username}/password", username)
+            .uri("$url/api/user/user/username/{username}/password", username)
             .retrieve()
             .onStatus(
                 HttpStatus.NOT_FOUND::equals
