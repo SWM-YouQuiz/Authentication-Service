@@ -1,5 +1,6 @@
 package com.quizit.authentication.repository
 
+import com.quizit.authentication.domain.Token
 import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import org.springframework.beans.factory.annotation.Value
@@ -13,7 +14,7 @@ class TokenRepository(
     @Value("\${jwt.refreshTokenExpire}")
     private val expire: Long
 ) {
-    suspend fun findByUserId(userId: String): com.quizit.authentication.domain.Token? =
+    suspend fun findByUserId(userId: String): Token? =
         redisTemplate.opsForValue()
             .get(getKey(userId))
             .awaitSingleOrNull()?.let {
@@ -23,7 +24,7 @@ class TokenRepository(
                 )
             }
 
-    suspend fun save(token: com.quizit.authentication.domain.Token): Boolean =
+    suspend fun save(token: Token): Boolean =
         with(token) {
             redisTemplate.opsForValue()
                 .set(getKey(userId), content, Duration.ofMinutes(expire))

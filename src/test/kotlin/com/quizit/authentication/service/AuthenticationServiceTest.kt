@@ -1,5 +1,10 @@
 package com.quizit.authentication.service
 
+import com.quizit.authentication.adapter.client.UserClient
+import com.quizit.authentication.exception.InvalidAccessException
+import com.quizit.authentication.exception.PasswordNotMatchException
+import com.quizit.authentication.exception.TokenNotFoundException
+import com.quizit.authentication.exception.UserNotFoundException
 import com.quizit.authentication.fixture.*
 import com.quizit.authentication.repository.TokenRepository
 import io.kotest.assertions.throwables.shouldThrow
@@ -13,7 +18,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 class AuthenticationServiceTest : BehaviorSpec() {
     private val tokenRepository = mockk<TokenRepository>()
 
-    private val userClient = mockk<com.quizit.authentication.adapter.client.UserClient>()
+    private val userClient = mockk<UserClient>()
 
     private val authenticationService =
         AuthenticationService(
@@ -46,7 +51,7 @@ class AuthenticationServiceTest : BehaviorSpec() {
 
             When("로그인을 시도하면") {
                 Then("예외가 발생한다.") {
-                    shouldThrow<com.quizit.authentication.exception.PasswordNotMatchException> {
+                    shouldThrow<PasswordNotMatchException> {
                         authenticationService.login(createLoginRequest(password = INVALID_PASSWORD))
                     }
                 }
@@ -58,17 +63,13 @@ class AuthenticationServiceTest : BehaviorSpec() {
                 userClient.getUserByUsername(
                     any()
                 )
-            } throws com.quizit.authentication.exception.UserNotFoundException()
-            coEvery {
-                userClient.getPasswordByUsername(
-                    any()
-                )
-            } throws com.quizit.authentication.exception.UserNotFoundException()
+            } throws UserNotFoundException()
+            coEvery { userClient.getPasswordByUsername(any()) } throws UserNotFoundException()
             coEvery { tokenRepository.save(any()) } returns false
 
             When("로그인을 시도하면") {
                 Then("예외가 발생한다.") {
-                    shouldThrow<com.quizit.authentication.exception.UserNotFoundException> {
+                    shouldThrow<UserNotFoundException> {
                         authenticationService.login(createLoginRequest(username = INVALID_USERNAME))
                     }
                 }
@@ -99,7 +100,7 @@ class AuthenticationServiceTest : BehaviorSpec() {
 
             When("유효하지 않은 리프레쉬 토큰으로 로그인 유지를 시도하면") {
                 Then("예외가 발생한다.") {
-                    shouldThrow<com.quizit.authentication.exception.InvalidAccessException> {
+                    shouldThrow<InvalidAccessException> {
                         authenticationService.refresh(createRefreshRequest(refreshToken = INVALID_TOKEN))
                     }
                 }
@@ -112,7 +113,7 @@ class AuthenticationServiceTest : BehaviorSpec() {
 
             When("리프레쉬 토큰으로 로그인 유지를 시도하면") {
                 Then("예외가 발생한다.") {
-                    shouldThrow<com.quizit.authentication.exception.TokenNotFoundException> {
+                    shouldThrow<TokenNotFoundException> {
                         authenticationService.refresh(createRefreshRequest())
                     }
                 }

@@ -1,5 +1,8 @@
 package com.quizit.authentication.adapter.client
 
+import com.quizit.authentication.dto.response.GetPasswordByUsernameResponse
+import com.quizit.authentication.dto.response.GetUserByUsernameResponse
+import com.quizit.authentication.exception.UserNotFoundException
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
@@ -12,23 +15,23 @@ class UserClient(
     @Value("\${url.service.user}")
     private val url: String
 ) {
-    suspend fun getUserByUsername(username: String): com.quizit.authentication.dto.response.GetUserByUsernameResponse =
+    suspend fun getUserByUsername(username: String): GetUserByUsernameResponse =
         webClient.get()
             .uri("$url/api/user/user/username/{username}", username)
             .retrieve()
             .onStatus(
                 HttpStatus.NOT_FOUND::equals
-            ) { throw com.quizit.authentication.exception.UserNotFoundException() }
-            .awaitBody<com.quizit.authentication.dto.response.GetUserByUsernameResponse>()
+            ) { throw UserNotFoundException() }
+            .awaitBody<GetUserByUsernameResponse>()
 
     suspend fun getPasswordByUsername(
         username: String
-    ): com.quizit.authentication.dto.response.GetPasswordByUsernameResponse =
+    ): GetPasswordByUsernameResponse =
         webClient.get()
             .uri("$url/api/user/user/username/{username}/password", username)
             .retrieve()
             .onStatus(
                 HttpStatus.NOT_FOUND::equals
-            ) { throw com.quizit.authentication.exception.UserNotFoundException() }
-            .awaitBody<com.quizit.authentication.dto.response.GetPasswordByUsernameResponse>()
+            ) { throw UserNotFoundException() }
+            .awaitBody<GetPasswordByUsernameResponse>()
 }

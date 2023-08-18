@@ -2,6 +2,7 @@ package com.quizit.authentication.fixture
 
 import com.github.jwt.authentication.DefaultJwtAuthentication
 import com.github.jwt.config.JwtConfiguration
+import com.quizit.authentication.domain.Token
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 
@@ -30,7 +31,7 @@ fun createJwtAuthentication(
 fun createToken(
     userId: String = ID,
     content: String = REFRESH_TOKEN
-): com.quizit.authentication.domain.Token = com.quizit.authentication.domain.Token(
+): Token = Token(
     userId = userId,
     content = content
 )

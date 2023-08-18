@@ -1,5 +1,7 @@
 package com.quizit.authentication.handler
 
+import com.quizit.authentication.dto.request.LoginRequest
+import com.quizit.authentication.dto.request.RefreshRequest
 import com.quizit.authentication.global.config.awaitAuthentication
 import com.quizit.authentication.service.AuthenticationService
 import org.springframework.stereotype.Component
@@ -10,7 +12,7 @@ class AuthenticationHandler(
     private val authenticationService: AuthenticationService
 ) {
     suspend fun login(request: ServerRequest): ServerResponse =
-        request.awaitBody<com.quizit.authentication.dto.request.LoginRequest>().let {
+        request.awaitBody<LoginRequest>().let {
             ServerResponse.ok().bodyValueAndAwait(authenticationService.login(it))
         }
 
@@ -22,7 +24,7 @@ class AuthenticationHandler(
         }
 
     suspend fun refresh(request: ServerRequest): ServerResponse =
-        request.awaitBody<com.quizit.authentication.dto.request.RefreshRequest>().let {
+        request.awaitBody<RefreshRequest>().let {
             ServerResponse.ok().bodyValueAndAwait(authenticationService.refresh(it))
         }
 }

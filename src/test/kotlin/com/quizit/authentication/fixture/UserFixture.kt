@@ -1,5 +1,7 @@
 package com.quizit.authentication.fixture
 
+import com.quizit.authentication.dto.response.GetPasswordByUsernameResponse
+import com.quizit.authentication.dto.response.GetUserByUsernameResponse
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import java.time.LocalDateTime
 
@@ -18,8 +20,8 @@ const val INVALID_PASSWORD = "invalid_password"
 
 fun createGetUserPasswordByUsernameResponse(
     password: String = PASSWORD
-): com.quizit.authentication.dto.response.GetPasswordByUsernameResponse =
-    com.quizit.authentication.dto.response.GetPasswordByUsernameResponse(BCryptPasswordEncoder().encode(password))
+): GetPasswordByUsernameResponse =
+    GetPasswordByUsernameResponse(BCryptPasswordEncoder().encode(password))
 
 fun createFindUserByUsernameResponse(
     id: String = ID,
@@ -31,8 +33,8 @@ fun createFindUserByUsernameResponse(
     correctQuizIds: Set<String> = CORRECT_QUIZ_IDS,
     incorrectQuizIds: Set<String> = INCORRECT_QUIZ_IDS,
     likedQuizIds: Set<String> = LIKED_QUIZ_IDS
-): com.quizit.authentication.dto.response.GetUserByUsernameResponse =
-    com.quizit.authentication.dto.response.GetUserByUsernameResponse(
+): GetUserByUsernameResponse =
+    GetUserByUsernameResponse(
         id = id,
         username = username,
         nickname = nickname,

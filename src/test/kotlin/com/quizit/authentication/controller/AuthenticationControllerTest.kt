@@ -2,6 +2,12 @@ package com.quizit.authentication.controller
 
 import com.epages.restdocs.apispec.WebTestClientRestDocumentationWrapper
 import com.ninjasquad.springmockk.MockkBean
+import com.quizit.authentication.dto.response.LoginResponse
+import com.quizit.authentication.dto.response.RefreshResponse
+import com.quizit.authentication.exception.InvalidAccessException
+import com.quizit.authentication.exception.PasswordNotMatchException
+import com.quizit.authentication.exception.TokenNotFoundException
+import com.quizit.authentication.exception.UserNotFoundException
 import com.quizit.authentication.fixture.createLoginRequest
 import com.quizit.authentication.fixture.createLoginResponse
 import com.quizit.authentication.fixture.createRefreshRequest
@@ -60,7 +66,7 @@ class AuthenticationControllerTest : BaseControllerTest() {
                         .exchange()
                         .expectStatus()
                         .isOk
-                        .expectBody(com.quizit.authentication.dto.response.LoginResponse::class.java)
+                        .expectBody(LoginResponse::class.java)
                         .consumeWith(
                             WebTestClientRestDocumentationWrapper.document(
                                 "로그인 성공(200)",
@@ -74,11 +80,7 @@ class AuthenticationControllerTest : BaseControllerTest() {
             }
 
             context("해당 아이디를 가진 유저가 존재하고 비밀번호가 일치하지 않는 경우") {
-                coEvery {
-                    authenticationService.login(
-                        any()
-                    )
-                } throws com.quizit.authentication.exception.PasswordNotMatchException()
+                coEvery { authenticationService.login(any()) } throws PasswordNotMatchException()
 
                 it("상태 코드 400과 에러를 반환한다.") {
                     webClient
@@ -102,11 +104,7 @@ class AuthenticationControllerTest : BaseControllerTest() {
             }
 
             context("요청으로 주어진 아이디가 존재하지 않는 경우") {
-                coEvery {
-                    authenticationService.login(
-                        any()
-                    )
-                } throws com.quizit.authentication.exception.UserNotFoundException()
+                coEvery { authenticationService.login(any()) } throws UserNotFoundException()
 
                 it("상태 코드 404와 에러를 반환한다.") {
                     webClient
@@ -161,7 +159,7 @@ class AuthenticationControllerTest : BaseControllerTest() {
                         .exchange()
                         .expectStatus()
                         .isOk
-                        .expectBody(com.quizit.authentication.dto.response.RefreshResponse::class.java)
+                        .expectBody(RefreshResponse::class.java)
                         .consumeWith(
                             WebTestClientRestDocumentationWrapper.document(
                                 "토큰 재발급 성공(200)",
@@ -175,11 +173,7 @@ class AuthenticationControllerTest : BaseControllerTest() {
             }
 
             context("요청을 보낸 유저의 리프레쉬 토큰이 저장소에 존재하지 않는 경우") {
-                coEvery {
-                    authenticationService.refresh(
-                        any()
-                    )
-                } throws com.quizit.authentication.exception.TokenNotFoundException()
+                coEvery { authenticationService.refresh(any()) } throws TokenNotFoundException()
 
                 it("상태 코드 404와 에러를 반환한다.") {
                     webClient
@@ -203,11 +197,7 @@ class AuthenticationControllerTest : BaseControllerTest() {
             }
 
             context("요청을 보낸 유저의 리프레쉬 토큰이 저장소에 있는 리프레쉬 토큰과 일치하지 않는 경우") {
-                coEvery {
-                    authenticationService.refresh(
-                        any()
-                    )
-                } throws com.quizit.authentication.exception.InvalidAccessException()
+                coEvery { authenticationService.refresh(any()) } throws InvalidAccessException()
 
                 it("상태 코드 403과 에러를 반환한다.") {
                     webClient
