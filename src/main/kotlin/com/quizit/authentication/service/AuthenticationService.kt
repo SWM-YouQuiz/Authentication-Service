@@ -5,10 +5,12 @@ import com.github.jwt.core.JwtProvider
 import com.quizit.authentication.adapter.client.UserClient
 import com.quizit.authentication.domain.Token
 import com.quizit.authentication.dto.request.LoginRequest
+import com.quizit.authentication.dto.request.MatchPasswordRequest
 import com.quizit.authentication.dto.request.RefreshRequest
 import com.quizit.authentication.dto.response.LoginResponse
 import com.quizit.authentication.dto.response.RefreshResponse
 import com.quizit.authentication.exception.InvalidAccessException
+import com.quizit.authentication.exception.PasswordNotMatchException
 import com.quizit.authentication.exception.TokenNotFoundException
 import com.quizit.authentication.repository.TokenRepository
 import kotlinx.coroutines.async
@@ -27,33 +29,36 @@ class AuthenticationService(
     suspend fun login(
         request: LoginRequest
     ): LoginResponse = coroutineScope {
-        val getPasswordByUsernameDeferred = async { userClient.getPasswordByUsername(request.username) }
-        val findByUsernameDeferred = async { userClient.getUserByUsername(request.username) }
-        val getUserPasswordByUsernameResponse = getPasswordByUsernameDeferred.await()
-        val findUserByUsernameResponse = findByUsernameDeferred.await()
+        with(request) {
+            val matchPasswordDeferred = async { userClient.matchPassword(username, MatchPasswordRequest(password)) }
+            val findByUsernameDeferred = async { userClient.getUserByUsername(username) }
+            val matchPasswordResponse = matchPasswordDeferred.await()
+            val findUserByUsernameResponse = findByUsernameDeferred.await()
 
-        if (passwordEncoder.matches(request.password, getUserPasswordByUsernameResponse.password)) {
-            findUserByUsernameResponse.run {
-                DefaultJwtAuthentication(
-                    id = id,
-                    authorities = listOf(SimpleGrantedAuthority(role))
-                )
-            }.let {
-                val accessToken = jwtProvider.createAccessToken(it)
-                val refreshToken = jwtProvider.createRefreshToken(it)
-
-                tokenRepository.save(
-                    Token(
-                        userId = it.id,
-                        content = refreshToken
+            if (matchPasswordResponse.isMatched) {
+                findUserByUsernameResponse.run {
+                    DefaultJwtAuthentication(
+                        id = id,
+                        authorities = listOf(SimpleGrantedAuthority(role))
                     )
-                )
+                }.let {
+                    val accessToken = jwtProvider.createAccessToken(it)
+                    val refreshToken = jwtProvider.createRefreshToken(it)
 
-                LoginResponse(
-                    accessToken = accessToken, refreshToken = refreshToken
-                )
-            }
-        } else throw com.quizit.authentication.exception.PasswordNotMatchException()
+                    tokenRepository.save(
+                        Token(
+                            userId = it.id,
+                            content = refreshToken
+                        )
+                    )
+
+                    LoginResponse(
+                        accessToken = accessToken,
+                        refreshToken = refreshToken
+                    )
+                }
+            } else throw PasswordNotMatchException()
+        }
     }
 
     suspend fun logout(userId: String) {
