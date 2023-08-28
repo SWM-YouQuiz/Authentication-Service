@@ -18,7 +18,7 @@ class GlobalExceptionHandler(
     private val objectMapper: ObjectMapper
 ) : ErrorWebExceptionHandler {
     override fun handle(exchange: ServerWebExchange, ex: Throwable): Mono<Void> = mono {
-        logger.error { ex.printStackTrace() }
+        logger.error { "${ex.message} at ${ex.stackTrace[0]}" }
 
         val errorResponse = if (ex is ServerException) {
             ErrorResponse(code = ex.code, message = ex.message)
