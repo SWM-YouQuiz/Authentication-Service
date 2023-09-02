@@ -21,11 +21,13 @@ val REFRESH_TOKEN = jwtProvider.createRefreshToken(createJwtAuthentication())
 
 fun createJwtAuthentication(
     id: String = ID,
-    authorities: List<GrantedAuthority> = AUTHORITIES
+    authorities: List<GrantedAuthority> = AUTHORITIES,
+    token: String? = null
 ): DefaultJwtAuthentication =
     DefaultJwtAuthentication(
         id = id,
-        authorities = authorities
+        authorities = authorities,
+        token = token
     )
 
 fun createToken(
