@@ -1,7 +1,7 @@
 package com.quizit.authentication.service
 
 import com.github.jwt.authentication.DefaultJwtAuthentication
-import com.github.jwt.core.JwtProvider
+import com.github.jwt.core.DefaultJwtProvider
 import com.quizit.authentication.adapter.client.UserClient
 import com.quizit.authentication.domain.Token
 import com.quizit.authentication.dto.request.LoginRequest
@@ -23,7 +23,7 @@ import org.springframework.stereotype.Service
 class AuthenticationService(
     private val tokenRepository: TokenRepository,
     private val userClient: UserClient,
-    private val jwtProvider: JwtProvider,
+    private val jwtProvider: DefaultJwtProvider,
     private val passwordEncoder: PasswordEncoder
 ) {
     suspend fun login(
