@@ -1,6 +1,6 @@
 package com.quizit.authentication.global.config
 
-import com.github.jwt.authentication.JwtAuthentication
+import com.github.jwt.authentication.DefaultJwtAuthentication
 import com.github.jwt.authentication.JwtAuthenticationFilter
 import com.github.jwt.core.JwtProvider
 import org.springframework.context.annotation.Bean
@@ -40,4 +40,5 @@ class SecurityConfiguration {
         }
 }
 
-suspend fun ServerRequest.awaitAuthentication(): JwtAuthentication = this.awaitPrincipal() as JwtAuthentication
+suspend fun ServerRequest.awaitAuthentication(): DefaultJwtAuthentication =
+    this.awaitPrincipal() as DefaultJwtAuthentication
