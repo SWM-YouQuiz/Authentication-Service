@@ -8,12 +8,14 @@ import java.time.LocalDateTime
 const val USERNAME = "earlgrey02@github.com"
 const val NICKNAME = "earlgrey02"
 const val PASSWORD = "root"
+const val IMAGE = "test"
 const val ROLE = "USER"
 const val ALLOW_PUSH = true
-val CREATED_DATE = LocalDateTime.now()!!
+const val DAILY_TARGET = 10
+const val ANSWER_RATE = 50.0
 val CORRECT_QUIZ_IDS = setOf("quiz_1")
 val INCORRECT_QUIZ_IDS = setOf("quiz_2")
-val LIKED_QUIZ_IDS = setOf("quiz_3")
+val MARKED_QUIZ_IDS = setOf("quiz_3")
 const val IS_MATCHED = true
 const val INVALID_USERNAME = "invalid_username"
 const val INVALID_PASSWORD = "invalid_password"
@@ -28,25 +30,31 @@ fun createMatchPasswordResponse(
 ): MatchPasswordResponse =
     MatchPasswordResponse(isMatched)
 
-fun createFindUserByUsernameResponse(
+fun createGetUserByUsernameResponse(
     id: String = ID,
     username: String = USERNAME,
     nickname: String = NICKNAME,
+    image: String = IMAGE,
     role: String = ROLE,
     allowPush: Boolean = ALLOW_PUSH,
+    dailyTarget: Int = DAILY_TARGET,
+    answerRate: Double = ANSWER_RATE,
     createdDate: LocalDateTime = CREATED_DATE,
     correctQuizIds: Set<String> = CORRECT_QUIZ_IDS,
     incorrectQuizIds: Set<String> = INCORRECT_QUIZ_IDS,
-    likedQuizIds: Set<String> = LIKED_QUIZ_IDS
+    markedQuizIds: Set<String> = MARKED_QUIZ_IDS,
 ): GetUserByUsernameResponse =
     GetUserByUsernameResponse(
         id = id,
         username = username,
         nickname = nickname,
+        image = image,
         role = role,
         allowPush = allowPush,
+        dailyTarget = dailyTarget,
+        answerRate = answerRate,
         createdDate = createdDate,
         correctQuizIds = correctQuizIds,
         incorrectQuizIds = incorrectQuizIds,
-        likedQuizIds = likedQuizIds
+        markedQuizIds = markedQuizIds
     )

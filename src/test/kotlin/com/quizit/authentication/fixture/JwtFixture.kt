@@ -9,7 +9,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority
 val SECRET_KEY = (1..100).map { ('a'..'z').random() }.joinToString("")
 const val ACCESS_TOKEN_EXPIRE = 5L
 const val REFRESH_TOKEN_EXPIRE = 10L
-val AUTHORITIES = listOf(SimpleGrantedAuthority(ROLE))
+val AUTHORITIES = listOf(SimpleGrantedAuthority("USER"))
 const val INVALID_TOKEN = "test"
 val jwtProvider = JwtConfiguration().jwtProvider(
     secretKey = SECRET_KEY,

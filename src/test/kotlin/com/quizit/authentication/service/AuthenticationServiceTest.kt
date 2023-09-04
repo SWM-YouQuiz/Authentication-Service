@@ -30,7 +30,7 @@ class AuthenticationServiceTest : BehaviorSpec() {
 
     init {
         Given("해당 아이디를 가진 유저가 존재하고 비밀번호가 일치하는 경우") {
-            coEvery { userClient.getUserByUsername(any()) } returns createFindUserByUsernameResponse()
+            coEvery { userClient.getUserByUsername(any()) } returns createGetUserByUsernameResponse()
             coEvery { userClient.matchPassword(any(), any()) } returns createMatchPasswordResponse()
             coEvery { tokenRepository.save(any()) } returns true
 
@@ -45,7 +45,7 @@ class AuthenticationServiceTest : BehaviorSpec() {
         }
 
         Given("해당 아이디를 가진 유저가 존재하지만 비밀번호가 일치하지 않는 경우") {
-            coEvery { userClient.getUserByUsername(any()) } returns createFindUserByUsernameResponse()
+            coEvery { userClient.getUserByUsername(any()) } returns createGetUserByUsernameResponse()
             coEvery { userClient.matchPassword(any(), any()) } returns createMatchPasswordResponse(false)
             coEvery { tokenRepository.save(any()) } returns false
 
