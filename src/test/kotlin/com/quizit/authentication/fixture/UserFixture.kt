@@ -1,6 +1,6 @@
 package com.quizit.authentication.fixture
 
-import com.quizit.authentication.domain.Role
+import com.quizit.authentication.domain.enum.Role
 import com.quizit.authentication.dto.request.MatchPasswordRequest
 import com.quizit.authentication.dto.response.MatchPasswordResponse
 import com.quizit.authentication.dto.response.UserResponse

@@ -1,6 +1,6 @@
 package com.quizit.authentication.dto.response
 
-import com.quizit.authentication.domain.Role
+import com.quizit.authentication.domain.enum.Role
 import java.time.LocalDateTime
 
 data class UserResponse(
