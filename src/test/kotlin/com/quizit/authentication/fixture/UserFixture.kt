@@ -1,15 +1,16 @@
 package com.quizit.authentication.fixture
 
+import com.quizit.authentication.domain.Role
 import com.quizit.authentication.dto.request.MatchPasswordRequest
-import com.quizit.authentication.dto.response.GetUserByUsernameResponse
 import com.quizit.authentication.dto.response.MatchPasswordResponse
+import com.quizit.authentication.dto.response.UserResponse
 import java.time.LocalDateTime
 
 const val USERNAME = "earlgrey02@github.com"
 const val NICKNAME = "earlgrey02"
 const val PASSWORD = "root"
 const val IMAGE = "test"
-const val ROLE = "USER"
+val ROLE = Role.USER
 const val ALLOW_PUSH = true
 const val DAILY_TARGET = 10
 const val ANSWER_RATE = 50.0
@@ -30,12 +31,12 @@ fun createMatchPasswordResponse(
 ): MatchPasswordResponse =
     MatchPasswordResponse(isMatched)
 
-fun createGetUserByUsernameResponse(
+fun createUserResponse(
     id: String = ID,
     username: String = USERNAME,
     nickname: String = NICKNAME,
     image: String = IMAGE,
-    role: String = ROLE,
+    role: Role = ROLE,
     allowPush: Boolean = ALLOW_PUSH,
     dailyTarget: Int = DAILY_TARGET,
     answerRate: Double = ANSWER_RATE,
@@ -43,8 +44,8 @@ fun createGetUserByUsernameResponse(
     correctQuizIds: Set<String> = CORRECT_QUIZ_IDS,
     incorrectQuizIds: Set<String> = INCORRECT_QUIZ_IDS,
     markedQuizIds: Set<String> = MARKED_QUIZ_IDS,
-): GetUserByUsernameResponse =
-    GetUserByUsernameResponse(
+): UserResponse =
+    UserResponse(
         id = id,
         username = username,
         nickname = nickname,

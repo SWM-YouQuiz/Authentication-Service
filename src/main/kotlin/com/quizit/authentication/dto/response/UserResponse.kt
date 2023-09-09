@@ -1,13 +1,14 @@
 package com.quizit.authentication.dto.response
 
+import com.quizit.authentication.domain.Role
 import java.time.LocalDateTime
 
-data class GetUserByUsernameResponse(
+data class UserResponse(
     val id: String,
     val username: String,
     val nickname: String,
     val image: String?,
-    val role: String,
+    val role: Role,
     val allowPush: Boolean,
     val dailyTarget: Int,
     val answerRate: Double,
