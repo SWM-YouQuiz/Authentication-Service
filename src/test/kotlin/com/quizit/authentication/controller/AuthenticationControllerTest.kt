@@ -45,7 +45,19 @@ class AuthenticationControllerTest : BaseControllerTest() {
 
     private val loginResponseFields = listOf(
         "accessToken" desc "액세스 토큰",
-        "refreshToken" desc "리프레쉬 토큰"
+        "refreshToken" desc "리프레쉬 토큰",
+        "user.id" desc "유저 식별자",
+        "user.username" desc "유저 아이디",
+        "user.nickname" desc "유저 닉네임",
+        "user.image" desc "유저 프로필 사진",
+        "user.role" desc "유저 권한",
+        "user.allowPush" desc "유저 알림 여부",
+        "user.dailyTarget" desc "유저 하루 목표",
+        "user.answerRate" desc "유저 정답률",
+        "user.correctQuizIds" desc "유저가 맞은 퀴즈 리스트",
+        "user.incorrectQuizIds" desc "유저가 틀린 퀴즈 리스트",
+        "user.markedQuizIds" desc "유저가 저장한 퀴즈 리스트",
+        "user.createdDate" desc "유저 가입 날짜"
     )
 
     private val refreshResponseFields = listOf(

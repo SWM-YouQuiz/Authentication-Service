@@ -1,8 +1,8 @@
 package com.quizit.authentication.adapter.client
 
 import com.quizit.authentication.dto.request.MatchPasswordRequest
-import com.quizit.authentication.dto.response.GetUserByUsernameResponse
 import com.quizit.authentication.dto.response.MatchPasswordResponse
+import com.quizit.authentication.dto.response.UserResponse
 import com.quizit.authentication.exception.UserNotFoundException
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
@@ -16,12 +16,12 @@ class UserClient(
     @Value("\${url.service.user}")
     private val url: String
 ) {
-    suspend fun getUserByUsername(username: String): GetUserByUsernameResponse =
+    suspend fun getUserByUsername(username: String): UserResponse =
         webClient.get()
             .uri("$url/api/user/user/username/{username}", username)
             .retrieve()
             .onStatus(HttpStatus.NOT_FOUND::equals) { throw UserNotFoundException() }
-            .awaitBody<GetUserByUsernameResponse>()
+            .awaitBody<UserResponse>()
 
     suspend fun matchPassword(username: String, request: MatchPasswordRequest): MatchPasswordResponse =
         webClient.post()

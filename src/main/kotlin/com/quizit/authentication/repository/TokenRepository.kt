@@ -18,7 +18,7 @@ class TokenRepository(
         redisTemplate.opsForValue()
             .get(getKey(userId))
             .awaitSingleOrNull()?.let {
-                com.quizit.authentication.domain.Token(
+                Token(
                     userId = userId,
                     content = it
                 )
