@@ -10,6 +10,7 @@ const val USERNAME = "earlgrey02@github.com"
 const val NICKNAME = "earlgrey02"
 const val PASSWORD = "root"
 const val IMAGE = "test"
+const val LEVEL = 2
 val ROLE = Role.USER
 const val ALLOW_PUSH = true
 const val DAILY_TARGET = 10
@@ -36,6 +37,7 @@ fun createUserResponse(
     username: String = USERNAME,
     nickname: String = NICKNAME,
     image: String = IMAGE,
+    level: Int = LEVEL,
     role: Role = ROLE,
     allowPush: Boolean = ALLOW_PUSH,
     dailyTarget: Int = DAILY_TARGET,
@@ -50,6 +52,7 @@ fun createUserResponse(
         username = username,
         nickname = nickname,
         image = image,
+        level = level,
         role = role,
         allowPush = allowPush,
         dailyTarget = dailyTarget,

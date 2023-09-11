@@ -8,6 +8,7 @@ data class UserResponse(
     val username: String,
     val nickname: String,
     val image: String?,
+    val level: Int,
     val role: Role,
     val allowPush: Boolean,
     val dailyTarget: Int,

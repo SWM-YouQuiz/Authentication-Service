@@ -50,6 +50,7 @@ class AuthenticationControllerTest : BaseControllerTest() {
         "user.username" desc "유저 아이디",
         "user.nickname" desc "유저 닉네임",
         "user.image" desc "유저 프로필 사진",
+        "user.level" desc "유저 레벨",
         "user.role" desc "유저 권한",
         "user.allowPush" desc "유저 알림 여부",
         "user.dailyTarget" desc "유저 하루 목표",
