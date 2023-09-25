@@ -7,13 +7,14 @@ import com.quizit.authentication.exception.TokenNotFoundException
 import com.quizit.authentication.exception.UserNotFoundException
 import com.quizit.authentication.fixture.*
 import com.quizit.authentication.repository.TokenRepository
-import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.shouldBe
-import io.mockk.coEvery
-import io.mockk.coVerify
+import io.mockk.every
 import io.mockk.mockk
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+import io.mockk.verify
+import reactor.core.publisher.Mono
+import reactor.kotlin.test.expectError
+import reactor.test.StepVerifier
 
 class AuthenticationServiceTest : BehaviorSpec() {
     private val tokenRepository = mockk<TokenRepository>()
@@ -25,93 +26,113 @@ class AuthenticationServiceTest : BehaviorSpec() {
             tokenRepository = tokenRepository,
             userClient = userClient,
             jwtProvider = jwtProvider,
-            passwordEncoder = BCryptPasswordEncoder()
         )
 
     init {
         Given("해당 아이디를 가진 유저가 존재하고 비밀번호가 일치하는 경우") {
-            coEvery { userClient.getUserByUsername(any()) } returns createUserResponse()
-            coEvery { userClient.matchPassword(any(), any()) } returns createMatchPasswordResponse()
-            coEvery { tokenRepository.save(any()) } returns true
+            every { userClient.getUserByUsername(any()) } returns Mono.just(createUserResponse())
+            every { userClient.matchPassword(any(), any()) } returns Mono.just(createMatchPasswordResponse())
+            every { tokenRepository.save(any()) } returns Mono.just(true)
 
             When("로그인을 시도하면") {
-                val loginResponse = authenticationService.login(createLoginRequest())
+                val result = StepVerifier.create(authenticationService.login(createLoginRequest()))
 
                 Then("해당 유저에 대한 액세스 토큰과 리프레쉬 토큰이 발급된다.") {
-                    jwtProvider.getAuthentication(loginResponse.accessToken).id shouldBe ID
-                    jwtProvider.getAuthentication(loginResponse.refreshToken).id shouldBe ID
+                    result.expectSubscription()
+                        .assertNext {
+                            jwtProvider.getAuthentication(it.accessToken).id shouldBe ID
+                            jwtProvider.getAuthentication(it.refreshToken).id shouldBe ID
+                        }
+                        .verifyComplete()
                 }
             }
         }
 
         Given("해당 아이디를 가진 유저가 존재하지만 비밀번호가 일치하지 않는 경우") {
-            coEvery { userClient.getUserByUsername(any()) } returns createUserResponse()
-            coEvery { userClient.matchPassword(any(), any()) } returns createMatchPasswordResponse(false)
-            coEvery { tokenRepository.save(any()) } returns false
+            every { userClient.getUserByUsername(any()) } returns Mono.just(createUserResponse())
+            every { userClient.matchPassword(any(), any()) } returns Mono.just(createMatchPasswordResponse(false))
+            every { tokenRepository.save(any()) } returns Mono.just(false)
 
             When("로그인을 시도하면") {
+                val result =
+                    StepVerifier.create(authenticationService.login(createLoginRequest(password = INVALID_PASSWORD)))
+
                 Then("예외가 발생한다.") {
-                    shouldThrow<PasswordNotMatchException> {
-                        authenticationService.login(createLoginRequest(password = INVALID_PASSWORD))
-                    }
+                    result.expectSubscription()
+                        .expectError<PasswordNotMatchException>()
+                        .verify()
                 }
             }
         }
 
         Given("해당 아이디를 가진 유저가 존재하지 않는 경우") {
-            coEvery { userClient.getUserByUsername(any()) } throws UserNotFoundException()
-            coEvery { userClient.matchPassword(any(), any()) } throws UserNotFoundException()
-            coEvery { tokenRepository.save(any()) } returns false
+            every { userClient.getUserByUsername(any()) } returns Mono.error(UserNotFoundException())
+            every { userClient.matchPassword(any(), any()) } returns Mono.error(UserNotFoundException())
+            every { tokenRepository.save(any()) } returns Mono.just(false)
 
             When("로그인을 시도하면") {
+                val result =
+                    StepVerifier.create(authenticationService.login(createLoginRequest(username = INVALID_USERNAME)))
+
                 Then("예외가 발생한다.") {
-                    shouldThrow<UserNotFoundException> {
-                        authenticationService.login(createLoginRequest(username = INVALID_USERNAME))
-                    }
+                    result.expectSubscription()
+                        .expectError<UserNotFoundException>()
+                        .verify()
                 }
             }
         }
 
         Given("유저가 로그인 상태인 경우") {
-            coEvery { tokenRepository.findByUserId(any()) } returns createToken()
-            coEvery { tokenRepository.save(any()) } returns true
-            coEvery { tokenRepository.deleteByUserId(any()) } returns true
+            every { tokenRepository.findByUserId(any()) } returns Mono.just(createToken())
+            every { tokenRepository.save(any()) } returns Mono.just(true)
+            every { tokenRepository.deleteByUserId(any()) } returns Mono.just(true)
 
             When("로그아웃을 시도하면") {
                 authenticationService.logout(ID)
+                    .subscribe()
 
                 Then("해당 유저의 리프레쉬 토큰이 삭제된다.") {
-                    coVerify { tokenRepository.deleteByUserId(any()) }
+                    verify { tokenRepository.deleteByUserId(any()) }
                 }
             }
 
             When("유효한 리프레쉬 토큰으로 로그인 유지를 시도하면") {
-                val refreshResponse = authenticationService.refresh(createRefreshRequest())
+                val result = StepVerifier.create(authenticationService.refresh(createRefreshRequest()))
 
                 Then("해당 유저에 대한 액세스 토큰과 리프레쉬 토큰이 발급된다.") {
-                    jwtProvider.getAuthentication(refreshResponse.accessToken).id shouldBe ID
-                    jwtProvider.getAuthentication(refreshResponse.refreshToken).id shouldBe ID
+                    result.expectSubscription()
+                        .assertNext {
+                            jwtProvider.getAuthentication(it.accessToken).id shouldBe ID
+                            jwtProvider.getAuthentication(it.refreshToken).id shouldBe ID
+                        }
+                        .verifyComplete()
                 }
             }
 
             When("유효하지 않은 리프레쉬 토큰으로 로그인 유지를 시도하면") {
+                val result = StepVerifier.create(
+                    authenticationService.refresh(createRefreshRequest(refreshToken = INVALID_TOKEN))
+                )
+
                 Then("예외가 발생한다.") {
-                    shouldThrow<InvalidAccessException> {
-                        authenticationService.refresh(createRefreshRequest(refreshToken = INVALID_TOKEN))
-                    }
+                    result.expectSubscription()
+                        .expectError<InvalidAccessException>()
+                        .verify()
                 }
             }
 
         }
 
         Given("로그인 상태가 아닌 경우") {
-            coEvery { tokenRepository.findByUserId(any()) } returns null
+            every { tokenRepository.findByUserId(any()) } returns Mono.empty()
 
             When("리프레쉬 토큰으로 로그인 유지를 시도하면") {
+                val result = StepVerifier.create(authenticationService.refresh(createRefreshRequest()))
+
                 Then("예외가 발생한다.") {
-                    shouldThrow<TokenNotFoundException> {
-                        authenticationService.refresh(createRefreshRequest())
-                    }
+                    result.expectSubscription()
+                        .expectError<TokenNotFoundException>()
+                        .verify()
                 }
             }
         }

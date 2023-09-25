@@ -9,10 +9,12 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
 
 infix fun String.desc(description: String): FieldDescriptor =
-    fieldWithPath(this).description(description)
+    fieldWithPath(this)
+        .description(description)
 
 infix fun String.paramDesc(description: String): ParameterDescriptor =
-    parameterWithName(this).description(description)
+    parameterWithName(this)
+        .description(description)
 
 fun withMockUser() {
     SecurityContextHolder.getContext().authentication = createJwtAuthentication()
