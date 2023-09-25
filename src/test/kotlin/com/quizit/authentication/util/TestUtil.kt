@@ -1,5 +1,6 @@
 package com.quizit.authentication.util
 
+import com.quizit.authentication.domain.enum.Role
 import com.quizit.authentication.fixture.createJwtAuthentication
 import org.springframework.restdocs.payload.FieldDescriptor
 import org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath
@@ -22,7 +23,7 @@ fun withMockUser() {
 
 fun withMockAdmin() {
     SecurityContextHolder.getContext().authentication =
-        createJwtAuthentication(authorities = listOf(SimpleGrantedAuthority("ADMIN")))
+        createJwtAuthentication(authorities = listOf(SimpleGrantedAuthority(Role.ADMIN.name)))
 }
 
 val errorResponseFields = listOf(
