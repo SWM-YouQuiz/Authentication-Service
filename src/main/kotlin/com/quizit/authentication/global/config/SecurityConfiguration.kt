@@ -15,7 +15,7 @@ import org.springframework.security.web.server.SecurityWebFilterChain
 import org.springframework.security.web.server.authentication.HttpStatusServerEntryPoint
 import org.springframework.security.web.server.context.NoOpServerSecurityContextRepository
 import org.springframework.web.reactive.function.server.ServerRequest
-import org.springframework.web.reactive.function.server.awaitPrincipal
+import reactor.core.publisher.Mono
 
 @Configuration
 @EnableWebFluxSecurity
@@ -32,15 +32,19 @@ class SecurityConfiguration {
             authorizeExchange {
                 it.pathMatchers("/api/auth/admin/**")
                     .hasAuthority("ADMIN")
-                    .pathMatchers("/actuator/health/**")
+                    .pathMatchers(
+                        "/actuator/health/**",
+                        "/auth/login"
+                    )
                     .permitAll()
                     .anyExchange()
-                    .permitAll()
+                    .authenticated()
             }
             addFilterAt(JwtAuthenticationFilter(jwtProvider), SecurityWebFiltersOrder.AUTHORIZATION)
             build()
         }
 }
 
-suspend fun ServerRequest.awaitAuthentication(): DefaultJwtAuthentication =
-    this.awaitPrincipal() as DefaultJwtAuthentication
+fun ServerRequest.authentication(): Mono<DefaultJwtAuthentication> =
+    principal()
+        .cast(DefaultJwtAuthentication::class.java)

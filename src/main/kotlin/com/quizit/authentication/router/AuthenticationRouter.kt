@@ -5,13 +5,13 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.web.reactive.function.server.RouterFunction
 import org.springframework.web.reactive.function.server.ServerResponse
-import org.springframework.web.reactive.function.server.coRouter
+import org.springframework.web.reactive.function.server.router
 
 @Configuration
 class AuthenticationRouter {
     @Bean
     fun authenticationRoutes(handler: AuthenticationHandler): RouterFunction<ServerResponse> =
-        coRouter {
+        router {
             "/auth".nest {
                 GET("/logout", handler::logout)
                 POST("/login", handler::login)

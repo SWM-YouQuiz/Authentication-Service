@@ -2,29 +2,37 @@ package com.quizit.authentication.handler
 
 import com.quizit.authentication.dto.request.LoginRequest
 import com.quizit.authentication.dto.request.RefreshRequest
-import com.quizit.authentication.global.config.awaitAuthentication
+import com.quizit.authentication.global.config.authentication
 import com.quizit.authentication.service.AuthenticationService
 import org.springframework.stereotype.Component
-import org.springframework.web.reactive.function.server.*
+import org.springframework.web.reactive.function.server.ServerRequest
+import org.springframework.web.reactive.function.server.ServerResponse
+import org.springframework.web.reactive.function.server.body
+import org.springframework.web.reactive.function.server.bodyToMono
+import reactor.core.publisher.Mono
 
 @Component
 class AuthenticationHandler(
     private val authenticationService: AuthenticationService
 ) {
-    suspend fun login(request: ServerRequest): ServerResponse =
-        request.awaitBody<LoginRequest>().let {
-            ServerResponse.ok().bodyValueAndAwait(authenticationService.login(it))
-        }
+    fun login(request: ServerRequest): Mono<ServerResponse> =
+        request.bodyToMono<LoginRequest>()
+            .flatMap {
+                ServerResponse.ok()
+                    .body(authenticationService.login(it))
+            }
 
-    suspend fun logout(request: ServerRequest): ServerResponse =
-        with(request.awaitAuthentication()) {
-            authenticationService.logout(id)
+    fun logout(request: ServerRequest): Mono<ServerResponse> =
+        request.authentication()
+            .flatMap {
+                ServerResponse.ok()
+                    .body(authenticationService.logout(it.id))
+            }
 
-            ServerResponse.ok().buildAndAwait()
-        }
-
-    suspend fun refresh(request: ServerRequest): ServerResponse =
-        request.awaitBody<RefreshRequest>().let {
-            ServerResponse.ok().bodyValueAndAwait(authenticationService.refresh(it))
-        }
+    fun refresh(request: ServerRequest): Mono<ServerResponse> =
+        request.bodyToMono<RefreshRequest>()
+            .flatMap {
+                ServerResponse.ok()
+                    .body(authenticationService.refresh(it))
+            }
 }
