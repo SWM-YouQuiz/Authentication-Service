@@ -3,6 +3,7 @@ package com.quizit.authentication.global.config
 import com.github.jwt.authentication.DefaultJwtAuthentication
 import com.github.jwt.authentication.JwtAuthenticationFilter
 import com.github.jwt.core.JwtProvider
+import com.quizit.authentication.domain.enum.Role
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpStatus
@@ -15,7 +16,7 @@ import org.springframework.security.web.server.SecurityWebFilterChain
 import org.springframework.security.web.server.authentication.HttpStatusServerEntryPoint
 import org.springframework.security.web.server.context.NoOpServerSecurityContextRepository
 import org.springframework.web.reactive.function.server.ServerRequest
-import org.springframework.web.reactive.function.server.awaitPrincipal
+import reactor.core.publisher.Mono
 
 @Configuration
 @EnableWebFluxSecurity
@@ -31,16 +32,20 @@ class SecurityConfiguration {
             securityContextRepository(NoOpServerSecurityContextRepository.getInstance())
             authorizeExchange {
                 it.pathMatchers("/api/auth/admin/**")
-                    .hasAuthority("ADMIN")
-                    .pathMatchers("/actuator/health/**")
+                    .hasAuthority(Role.ADMIN.name)
+                    .pathMatchers(
+                        "/actuator/health/**",
+                        "/auth/login"
+                    )
                     .permitAll()
                     .anyExchange()
-                    .permitAll()
+                    .authenticated()
             }
             addFilterAt(JwtAuthenticationFilter(jwtProvider), SecurityWebFiltersOrder.AUTHORIZATION)
             build()
         }
 }
 
-suspend fun ServerRequest.awaitAuthentication(): DefaultJwtAuthentication =
-    this.awaitPrincipal() as DefaultJwtAuthentication
+fun ServerRequest.authentication(): Mono<DefaultJwtAuthentication> =
+    principal()
+        .cast(DefaultJwtAuthentication::class.java)

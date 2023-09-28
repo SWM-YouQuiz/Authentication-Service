@@ -12,89 +12,86 @@ import com.quizit.authentication.dto.response.RefreshResponse
 import com.quizit.authentication.exception.InvalidAccessException
 import com.quizit.authentication.exception.PasswordNotMatchException
 import com.quizit.authentication.exception.TokenNotFoundException
+import com.quizit.authentication.global.util.component1
+import com.quizit.authentication.global.util.component2
 import com.quizit.authentication.repository.TokenRepository
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
 import org.springframework.security.core.authority.SimpleGrantedAuthority
-import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
+import reactor.core.publisher.Mono
+import reactor.core.scheduler.Schedulers
 
 @Service
 class AuthenticationService(
     private val tokenRepository: TokenRepository,
     private val userClient: UserClient,
     private val jwtProvider: DefaultJwtProvider,
-    private val passwordEncoder: PasswordEncoder
 ) {
-    suspend fun login(
-        request: LoginRequest
-    ): LoginResponse = coroutineScope {
+    fun login(request: LoginRequest): Mono<LoginResponse> =
         with(request) {
-            val matchPasswordDeferred =
-                async(Dispatchers.IO) { userClient.matchPassword(username, MatchPasswordRequest(password)) }
-            val getUserByUsernameDeferred = async(Dispatchers.IO) { userClient.getUserByUsername(username) }
-            val matchPasswordResponse = matchPasswordDeferred.await()
-            val userResponse = getUserByUsernameDeferred.await()
-
-            if (matchPasswordResponse.isMatched) {
-                userResponse.run {
-                    DefaultJwtAuthentication(
-                        id = id,
-                        authorities = listOf(SimpleGrantedAuthority(role.name))
-                    )
-                }.let {
-                    val accessToken = jwtProvider.createAccessToken(it)
-                    val refreshToken = jwtProvider.createRefreshToken(it)
+            Mono.zip(
+                userClient.getUserByUsername(username)
+                    .subscribeOn(Schedulers.parallel()),
+                userClient.matchPassword(username, MatchPasswordRequest(password))
+                    .subscribeOn(Schedulers.parallel())
+            ).filter { (_, matchPasswordResponse) -> matchPasswordResponse.isMatched }
+                .switchIfEmpty(Mono.error(PasswordNotMatchException()))
+                .map { (userResponse) ->
+                    userResponse.let {
+                        Pair(
+                            it,
+                            DefaultJwtAuthentication(
+                                id = it.id,
+                                authorities = listOf(SimpleGrantedAuthority(it.role.name))
+                            )
+                        )
+                    }
+                }
+                .flatMap { (userResponse, authentication) ->
+                    val accessToken = jwtProvider.createAccessToken(authentication)
+                    val refreshToken = jwtProvider.createRefreshToken(authentication)
 
                     tokenRepository.save(
                         Token(
-                            userId = it.id,
+                            userId = authentication.id,
                             content = refreshToken
                         )
-                    )
-
-                    LoginResponse(
-                        accessToken = accessToken,
-                        refreshToken = refreshToken,
-                        user = userResponse
+                    ).thenReturn(
+                        LoginResponse(
+                            accessToken = accessToken,
+                            refreshToken = refreshToken,
+                            user = userResponse
+                        )
                     )
                 }
-            } else throw PasswordNotMatchException()
         }
-    }
 
-    suspend fun logout(userId: String) {
+    fun logout(userId: String): Mono<Void> =
         tokenRepository.deleteByUserId(userId)
-    }
+            .then()
 
-    suspend fun refresh(
-        request: RefreshRequest
-    ): RefreshResponse {
-        val refreshToken = tokenRepository.findByUserId(request.userId)?.content
-            ?: throw TokenNotFoundException()
-
-        jwtProvider.getAuthentication(refreshToken).let {
-            if (request.refreshToken == refreshToken) {
-                val newAccessToken = jwtProvider.createAccessToken(it)
-                val newRefreshToken = jwtProvider.createRefreshToken(it)
+    fun refresh(request: RefreshRequest): Mono<RefreshResponse> =
+        tokenRepository.findByUserId(request.userId)
+            .switchIfEmpty(Mono.error(TokenNotFoundException()))
+            .map { jwtProvider.getAuthentication(it.content) }
+            .filter { request.refreshToken == it.token }
+            .switchIfEmpty(
+                tokenRepository.deleteByUserId(request.userId)
+                    .then(Mono.error(InvalidAccessException()))
+            )
+            .flatMap {
+                val accessToken = jwtProvider.createAccessToken(it)
+                val refreshToken = jwtProvider.createRefreshToken(it)
 
                 tokenRepository.save(
                     Token(
                         userId = it.id,
-                        content = newRefreshToken
+                        content = refreshToken
+                    )
+                ).thenReturn(
+                    RefreshResponse(
+                        accessToken = accessToken,
+                        refreshToken = refreshToken
                     )
                 )
-
-                return RefreshResponse(
-                    accessToken = newAccessToken,
-                    refreshToken = newRefreshToken
-                )
-            } else {
-                tokenRepository.deleteByUserId(it.id)
-
-                throw InvalidAccessException()
             }
-        }
-    }
 }

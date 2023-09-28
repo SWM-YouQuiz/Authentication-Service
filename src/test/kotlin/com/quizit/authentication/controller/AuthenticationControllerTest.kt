@@ -20,13 +20,12 @@ import com.quizit.authentication.util.BaseControllerTest
 import com.quizit.authentication.util.desc
 import com.quizit.authentication.util.errorResponseFields
 import com.quizit.authentication.util.withMockUser
-import io.mockk.Runs
 import io.mockk.coEvery
-import io.mockk.just
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest
 import org.springframework.restdocs.operation.preprocess.Preprocessors.*
 import org.springframework.restdocs.payload.PayloadDocumentation.requestFields
 import org.springframework.restdocs.payload.PayloadDocumentation.responseFields
+import reactor.core.publisher.Mono
 
 @WebFluxTest(AuthenticationHandler::class, AuthenticationRouter::class)
 class AuthenticationControllerTest : BaseControllerTest() {
@@ -69,7 +68,7 @@ class AuthenticationControllerTest : BaseControllerTest() {
     init {
         describe("login()은") {
             context("해당 아이디를 가진 유저가 존재하고 비밀번호가 일치하는 경우") {
-                coEvery { authenticationService.login(any()) } returns createLoginResponse()
+                coEvery { authenticationService.login(any()) } returns Mono.just(createLoginResponse())
 
                 it("상태 코드 200과 LoginResponse를 반환한다.") {
                     webClient
@@ -144,7 +143,7 @@ class AuthenticationControllerTest : BaseControllerTest() {
 
         describe("logout()은") {
             context("요청을 보낸 유저가 로그인 상태인 경우") {
-                coEvery { authenticationService.logout(any()) } just Runs
+                coEvery { authenticationService.logout(any()) } returns Mono.empty()
                 withMockUser()
 
                 it("상태 코드 200을 반환한다.") {
@@ -162,7 +161,8 @@ class AuthenticationControllerTest : BaseControllerTest() {
 
         describe("refresh()는") {
             context("요청을 보낸 유저가 로그인 상태인 경우") {
-                coEvery { authenticationService.refresh(any()) } returns createRefreshResponse()
+                coEvery { authenticationService.refresh(any()) } returns Mono.just(createRefreshResponse())
+                withMockUser()
 
                 it("상태 코드 200과 refreshResponse를 반환한다.") {
                     webClient
@@ -187,6 +187,7 @@ class AuthenticationControllerTest : BaseControllerTest() {
 
             context("요청을 보낸 유저의 리프레쉬 토큰이 저장소에 존재하지 않는 경우") {
                 coEvery { authenticationService.refresh(any()) } throws TokenNotFoundException()
+                withMockUser()
 
                 it("상태 코드 404와 에러를 반환한다.") {
                     webClient
@@ -211,6 +212,7 @@ class AuthenticationControllerTest : BaseControllerTest() {
 
             context("요청을 보낸 유저의 리프레쉬 토큰이 저장소에 있는 리프레쉬 토큰과 일치하지 않는 경우") {
                 coEvery { authenticationService.refresh(any()) } throws InvalidAccessException()
+                withMockUser()
 
                 it("상태 코드 403과 에러를 반환한다.") {
                     webClient
