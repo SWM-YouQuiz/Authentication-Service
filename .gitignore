@@ -4,7 +4,6 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 **/static/docs/
-application-oauth.yml
 
 ### STS ###
 .apt_generated
