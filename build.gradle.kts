@@ -101,7 +101,8 @@ tasks {
                     "**.*Client*",
                     "**.*Producer*",
                     "**.*Consumer*",
-                    "**.*Event*"
+                    "**.*Event*",
+                    "**.*OAuth*"
                 )
             }
         }
