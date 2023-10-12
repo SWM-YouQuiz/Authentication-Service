@@ -10,6 +10,7 @@ import com.quizit.authentication.dto.request.RefreshRequest
 import com.quizit.authentication.dto.response.LoginResponse
 import com.quizit.authentication.dto.response.RefreshResponse
 import com.quizit.authentication.exception.InvalidAccessException
+import com.quizit.authentication.exception.OAuthLoginException
 import com.quizit.authentication.exception.PasswordNotMatchException
 import com.quizit.authentication.exception.TokenNotFoundException
 import com.quizit.authentication.global.util.component1
@@ -33,7 +34,9 @@ class AuthenticationService(
                     .subscribeOn(Schedulers.parallel()),
                 userClient.matchPassword(username, MatchPasswordRequest(password))
                     .subscribeOn(Schedulers.parallel())
-            ).filter { (_, matchPasswordResponse) -> matchPasswordResponse.isMatched }
+            ).filter { (user) -> user.provider == null }
+                .switchIfEmpty(Mono.error(OAuthLoginException()))
+                .filter { (_, matchPasswordResponse) -> matchPasswordResponse.isMatched }
                 .switchIfEmpty(Mono.error(PasswordNotMatchException()))
                 .map { (userResponse) ->
                     userResponse.let {
