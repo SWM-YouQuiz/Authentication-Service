@@ -4,6 +4,7 @@ import com.github.jwt.authentication.DefaultJwtAuthentication
 import com.github.jwt.authentication.JwtAuthenticationFilter
 import com.github.jwt.core.JwtProvider
 import com.quizit.authentication.domain.enum.Role
+import com.quizit.authentication.handler.OAuth2LoginSuccessHandler
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpStatus
@@ -25,7 +26,9 @@ class SecurityConfiguration {
     fun passwordEncoder(): PasswordEncoder = BCryptPasswordEncoder()
 
     @Bean
-    fun filterChain(http: ServerHttpSecurity, jwtProvider: JwtProvider): SecurityWebFilterChain =
+    fun filterChain(
+        http: ServerHttpSecurity, jwtProvider: JwtProvider, oAuth2LoginSuccessHandler: OAuth2LoginSuccessHandler
+    ): SecurityWebFilterChain =
         with(http) {
             csrf { it.disable() }
             httpBasic { it.authenticationEntryPoint(HttpStatusServerEntryPoint(HttpStatus.UNAUTHORIZED)) }
@@ -41,6 +44,7 @@ class SecurityConfiguration {
                     .anyExchange()
                     .authenticated()
             }
+            oauth2Login { it.authenticationSuccessHandler(oAuth2LoginSuccessHandler) }
             addFilterAt(JwtAuthenticationFilter(jwtProvider), SecurityWebFiltersOrder.AUTHORIZATION)
             build()
         }
