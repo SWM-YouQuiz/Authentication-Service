@@ -54,6 +54,7 @@ class AuthenticationControllerTest : BaseControllerTest() {
         "user.allowPush" desc "유저 알림 여부",
         "user.dailyTarget" desc "유저 하루 목표",
         "user.answerRate" desc "유저 정답률",
+        "user.provider" desc "유저 OAuth Provider",
         "user.correctQuizIds" desc "유저가 맞은 퀴즈 리스트",
         "user.incorrectQuizIds" desc "유저가 틀린 퀴즈 리스트",
         "user.markedQuizIds" desc "유저가 저장한 퀴즈 리스트",

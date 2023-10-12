@@ -1,5 +1,6 @@
 package com.quizit.authentication.fixture
 
+import com.quizit.authentication.domain.enum.Provider
 import com.quizit.authentication.domain.enum.Role
 import com.quizit.authentication.dto.request.MatchPasswordRequest
 import com.quizit.authentication.dto.response.MatchPasswordResponse
@@ -15,6 +16,7 @@ val ROLE = Role.USER
 const val ALLOW_PUSH = true
 const val DAILY_TARGET = 10
 const val ANSWER_RATE = 50.0
+val PROVIDER = null
 val CORRECT_QUIZ_IDS = hashSetOf("1")
 val INCORRECT_QUIZ_IDS = hashSetOf("1")
 val MARKED_QUIZ_IDS = hashSetOf("1")
@@ -36,12 +38,13 @@ fun createUserResponse(
     id: String = ID,
     username: String = USERNAME,
     nickname: String = NICKNAME,
-    image: String = IMAGE,
+    image: String? = IMAGE,
     level: Int = LEVEL,
     role: Role = ROLE,
     allowPush: Boolean = ALLOW_PUSH,
     dailyTarget: Int = DAILY_TARGET,
     answerRate: Double = ANSWER_RATE,
+    provider: Provider? = PROVIDER,
     createdDate: LocalDateTime = CREATED_DATE,
     correctQuizIds: HashSet<String> = CORRECT_QUIZ_IDS,
     incorrectQuizIds: HashSet<String> = INCORRECT_QUIZ_IDS,
@@ -57,6 +60,7 @@ fun createUserResponse(
         allowPush = allowPush,
         dailyTarget = dailyTarget,
         answerRate = answerRate,
+        provider = provider,
         createdDate = createdDate,
         correctQuizIds = correctQuizIds,
         incorrectQuizIds = incorrectQuizIds,
