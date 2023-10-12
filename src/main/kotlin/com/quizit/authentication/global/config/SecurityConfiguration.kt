@@ -31,8 +31,12 @@ class SecurityConfiguration {
     ): SecurityWebFilterChain =
         with(http) {
             csrf { it.disable() }
-            httpBasic { it.authenticationEntryPoint(HttpStatusServerEntryPoint(HttpStatus.UNAUTHORIZED)) }
+            formLogin { it.disable() }
+            httpBasic { it.disable() }
+            logout { it.disable() }
+            requestCache { it.disable() }
             securityContextRepository(NoOpServerSecurityContextRepository.getInstance())
+            exceptionHandling { it.authenticationEntryPoint(HttpStatusServerEntryPoint(HttpStatus.UNAUTHORIZED)) }
             authorizeExchange {
                 it.pathMatchers("/api/auth/admin/**")
                     .hasAuthority(Role.ADMIN.name)
