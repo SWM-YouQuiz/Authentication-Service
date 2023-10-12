@@ -1,9 +1,12 @@
 package com.quizit.authentication.adapter.client
 
+import com.quizit.authentication.dto.request.CreateUserRequest
 import com.quizit.authentication.dto.request.MatchPasswordRequest
 import com.quizit.authentication.dto.response.MatchPasswordResponse
 import com.quizit.authentication.dto.response.UserResponse
+import com.quizit.authentication.exception.OAuthLoginException
 import com.quizit.authentication.exception.UserNotFoundException
+import com.quizit.authentication.exception.UsernameAlreadyExistException
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
@@ -30,5 +33,14 @@ class UserClient(
             .bodyValue(request)
             .retrieve()
             .onStatus(HttpStatus.NOT_FOUND::equals) { Mono.error(UserNotFoundException()) }
+            .onStatus(HttpStatus.BAD_REQUEST::equals) { Mono.error(OAuthLoginException()) }
             .bodyToMono<MatchPasswordResponse>()
+
+    fun createUser(request: CreateUserRequest): Mono<UserResponse> =
+        webClient.post()
+            .uri("$url/api/user/user")
+            .bodyValue(request)
+            .retrieve()
+            .onStatus(HttpStatus.CONFLICT::equals) { Mono.error(UsernameAlreadyExistException()) }
+            .bodyToMono<UserResponse>()
 }
