@@ -45,7 +45,7 @@ class OAuth2LoginSuccessHandler(
                     webFilterExchange.exchange.response.apply {
                         statusCode = HttpStatus.FOUND
                         headers.location =
-                            URI("$url?accessToken=$accessToken&refreshToken=$refreshToken")
+                            URI("$url?accessToken=$accessToken&refreshToken=$refreshToken&id=${it.id}")
                     }.setComplete()
                 )
             }
