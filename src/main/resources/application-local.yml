@@ -12,9 +12,9 @@ jwt:
 url:
   frontend: http://localhost:3000
   service:
-    auth: http://localhost:8081
-    user: http://localhost:8082
-    quiz: http://localhost:8083
+    auth: http://localhost:8081/api/auth
+    user: http://localhost:8082/api/user
+    quiz: http://localhost:8083/api/quiz
 logging:
   level:
     web: debug

@@ -10,6 +10,6 @@ jwt:
 url:
   frontend: ${FRONTEND_URL}
   service:
-    auth: auth-service
-    user: user-service
-    quiz: quiz-service
+    auth: auth-service/api/auth
+    user: user-service/api/user
+    quiz: quiz-service/api/quiz

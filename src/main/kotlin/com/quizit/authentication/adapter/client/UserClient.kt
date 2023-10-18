@@ -22,14 +22,14 @@ class UserClient(
 ) {
     fun getUserByUsername(username: String): Mono<UserResponse> =
         webClient.get()
-            .uri("$url/api/user/user/username/{username}", username)
+            .uri("$url/user/username/{username}", username)
             .retrieve()
             .onStatus(HttpStatus.NOT_FOUND::equals) { Mono.error(UserNotFoundException()) }
             .bodyToMono<UserResponse>()
 
     fun matchPassword(username: String, request: MatchPasswordRequest): Mono<MatchPasswordResponse> =
         webClient.post()
-            .uri("$url/api/user/user/username/{username}/match-password", username)
+            .uri("$url/user/username/{username}/match-password", username)
             .bodyValue(request)
             .retrieve()
             .onStatus(HttpStatus.NOT_FOUND::equals) { Mono.error(UserNotFoundException()) }
@@ -38,7 +38,7 @@ class UserClient(
 
     fun createUser(request: CreateUserRequest): Mono<UserResponse> =
         webClient.post()
-            .uri("$url/api/user/user")
+            .uri("$url/user")
             .bodyValue(request)
             .retrieve()
             .onStatus(HttpStatus.CONFLICT::equals) { Mono.error(UsernameAlreadyExistException()) }
