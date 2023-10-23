@@ -31,7 +31,7 @@ class AppleOAuth2UserInfo(
     name: String?
 ) : OAuth2UserInfo(
     email = email,
-    provider = Provider.GOOGLE,
+    provider = Provider.APPLE,
     name = name,
     attributes = emptyMap<String, Any>()
 )
