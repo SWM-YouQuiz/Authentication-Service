@@ -5,6 +5,7 @@ import com.quizit.authentication.global.annotation.Client
 import com.quizit.authentication.global.oauth.AppleOAuth2Provider
 import com.quizit.authentication.global.util.multiValueMapOf
 import io.jsonwebtoken.Jwts
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.MediaType
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.bodyToMono
@@ -13,7 +14,9 @@ import reactor.core.publisher.Mono
 @Client
 class AppleClient(
     private val webClient: WebClient,
-    private val appleOAuth2Provider: AppleOAuth2Provider
+    private val appleOAuth2Provider: AppleOAuth2Provider,
+    @Value("\${url.frontend}")
+    private val frontendUrl: String
 ) {
     fun getIdTokenByCode(code: String): Mono<String> =
         getTokenResponseByCode(code)
@@ -51,7 +54,7 @@ class AppleClient(
                     "client_id" to appleOAuth2Provider.clientId,
                     "client_secret" to appleOAuth2Provider.createClientSecret(),
                     "code" to code,
-                    "redirect_uri" to "https://quizit.org/api/auth/oauth2/redirect/apple",
+                    "redirect_uri" to "$frontendUrl/api/auth/oauth2/redirect/apple",
                     "grant_type" to "authorization_code"
                 )
             )

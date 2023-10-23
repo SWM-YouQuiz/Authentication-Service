@@ -8,7 +8,7 @@ jwt:
   accessTokenExpire: ${JWT_ACCESS_EXPIRE}
   refreshTokenExpire: ${JWT_REFRESH_EXPIRE}
 url:
-  frontend: ${FRONTEND_URL}
+  frontend: https://dev.quizit.org
   service:
     auth: auth-service/api/auth
     user: user-service/api/user

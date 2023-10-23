@@ -13,6 +13,7 @@ import com.quizit.authentication.domain.enum.Provider
 import com.quizit.authentication.dto.request.CreateUserRequest
 import com.quizit.authentication.exception.UserNotFoundException
 import com.quizit.authentication.repository.TokenRepository
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseCookie
 import org.springframework.security.core.authority.SimpleGrantedAuthority
@@ -32,6 +33,8 @@ class AppleOAuth2Service(
     private val userClient: UserClient,
     private val objectMapper: ObjectMapper,
     private val jwtProvider: DefaultJwtProvider,
+    @Value("\${url.frontend}")
+    private val frontendUrl: String
 ) {
     fun loginRedirect(loginResponse: MultiValueMap<String, String>): Mono<ServerResponse> =
         Mono.justOrEmpty(loginResponse["user"]?.first()!!)
@@ -84,7 +87,7 @@ class AppleOAuth2Service(
                     )
                 ).then(
                     ServerResponse.status(HttpStatus.FOUND)
-                        .location(URI.create("https://quizit.org/login-redirection?isSignUp=$isSignUp"))
+                        .location(URI.create("$frontendUrl/login-redirection?isSignUp=$isSignUp"))
                         .cookies {
                             mapOf(
                                 "accessToken" to accessToken,
@@ -95,7 +98,7 @@ class AppleOAuth2Service(
                                         .httpOnly(true)
                                         .secure(true)
                                         .maxAge(Duration.ofMinutes(10))
-                                        .path("https://quizit.org/")
+                                        .path("$frontendUrl/")
                                         .build()
                                 )
                             }
