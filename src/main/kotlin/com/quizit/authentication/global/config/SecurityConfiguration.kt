@@ -1,6 +1,5 @@
 package com.quizit.authentication.global.config
 
-import com.github.jwt.authentication.DefaultJwtAuthentication
 import com.github.jwt.authentication.JwtAuthenticationFilter
 import com.github.jwt.core.JwtProvider
 import com.quizit.authentication.domain.enum.Role
@@ -16,18 +15,18 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.server.SecurityWebFilterChain
 import org.springframework.security.web.server.authentication.HttpStatusServerEntryPoint
 import org.springframework.security.web.server.context.NoOpServerSecurityContextRepository
-import org.springframework.web.reactive.function.server.ServerRequest
-import reactor.core.publisher.Mono
 
-@Configuration
 @EnableWebFluxSecurity
+@Configuration
 class SecurityConfiguration {
     @Bean
     fun passwordEncoder(): PasswordEncoder = BCryptPasswordEncoder()
 
     @Bean
     fun filterChain(
-        http: ServerHttpSecurity, jwtProvider: JwtProvider, oAuth2LoginSuccessHandler: OAuth2LoginSuccessHandler
+        http: ServerHttpSecurity,
+        jwtAuthenticationFilter: JwtAuthenticationFilter,
+        oAuth2LoginSuccessHandler: OAuth2LoginSuccessHandler
     ): SecurityWebFilterChain =
         with(http) {
             csrf { it.disable() }
@@ -51,11 +50,11 @@ class SecurityConfiguration {
                     .authenticated()
             }
             oauth2Login { it.authenticationSuccessHandler(oAuth2LoginSuccessHandler) }
-            addFilterAt(JwtAuthenticationFilter(jwtProvider), SecurityWebFiltersOrder.AUTHORIZATION)
+            addFilterAt(jwtAuthenticationFilter, SecurityWebFiltersOrder.AUTHORIZATION)
             build()
         }
-}
 
-fun ServerRequest.authentication(): Mono<DefaultJwtAuthentication> =
-    principal()
-        .cast(DefaultJwtAuthentication::class.java)
+    @Bean
+    fun jwtAuthenticationFilter(jwtProvider: JwtProvider): JwtAuthenticationFilter =
+        JwtAuthenticationFilter(jwtProvider)
+}

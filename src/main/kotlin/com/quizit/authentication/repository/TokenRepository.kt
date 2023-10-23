@@ -1,6 +1,6 @@
 package com.quizit.authentication.repository
 
-import com.quizit.authentication.domain.Token
+import com.quizit.authentication.domain.RefreshToken
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.redis.core.ReactiveRedisTemplate
 import org.springframework.stereotype.Repository
@@ -13,17 +13,17 @@ class TokenRepository(
     @Value("\${jwt.refreshTokenExpire}")
     private val expire: Long
 ) {
-    fun findByUserId(userId: String): Mono<Token> =
+    fun findByUserId(userId: String): Mono<RefreshToken> =
         redisTemplate.opsForValue()
             .get(getKey(userId))
             .map {
-                Token(
+                RefreshToken(
                     userId = userId,
                     content = it
                 )
             }
 
-    fun save(token: Token): Mono<Boolean> =
+    fun save(token: RefreshToken): Mono<Boolean> =
         with(token) {
             redisTemplate.opsForValue()
                 .set(getKey(userId), content, Duration.ofMinutes(expire))

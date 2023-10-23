@@ -2,21 +2,19 @@ package com.quizit.authentication.fixture
 
 import com.quizit.authentication.domain.enum.Provider
 import com.quizit.authentication.domain.enum.Role
-import com.quizit.authentication.dto.request.MatchPasswordRequest
-import com.quizit.authentication.dto.response.MatchPasswordResponse
 import com.quizit.authentication.dto.response.UserResponse
 import java.time.LocalDateTime
 
-const val USERNAME = "earlgrey02@github.com"
-const val NICKNAME = "earlgrey02"
-const val PASSWORD = "root"
-const val IMAGE = "http://localhost:8080/image.jpg"
+const val EMAIL = "email"
+const val USERNAME = "username"
+const val PASSWORD = "password"
+const val IMAGE = "image"
 const val LEVEL = 2
 val ROLE = Role.USER
 const val ALLOW_PUSH = true
 const val DAILY_TARGET = 10
 const val ANSWER_RATE = 50.0
-val PROVIDER = null
+val PROVIDER = Provider.GOOGLE
 val CORRECT_QUIZ_IDS = hashSetOf("1")
 val INCORRECT_QUIZ_IDS = hashSetOf("1")
 val MARKED_QUIZ_IDS = hashSetOf("1")
@@ -24,27 +22,17 @@ const val IS_MATCHED = true
 const val INVALID_USERNAME = "invalid_username"
 const val INVALID_PASSWORD = "invalid_password"
 
-fun createMatchPasswordRequest(
-    password: String = PASSWORD
-): MatchPasswordRequest =
-    MatchPasswordRequest(password)
-
-fun createMatchPasswordResponse(
-    isMatched: Boolean = IS_MATCHED
-): MatchPasswordResponse =
-    MatchPasswordResponse(isMatched)
-
 fun createUserResponse(
     id: String = ID,
+    email: String = EMAIL,
     username: String = USERNAME,
-    nickname: String = NICKNAME,
     image: String? = IMAGE,
     level: Int = LEVEL,
     role: Role = ROLE,
     allowPush: Boolean = ALLOW_PUSH,
     dailyTarget: Int = DAILY_TARGET,
     answerRate: Double = ANSWER_RATE,
-    provider: Provider? = PROVIDER,
+    provider: Provider = PROVIDER,
     createdDate: LocalDateTime = CREATED_DATE,
     correctQuizIds: HashSet<String> = CORRECT_QUIZ_IDS,
     incorrectQuizIds: HashSet<String> = INCORRECT_QUIZ_IDS,
@@ -52,8 +40,8 @@ fun createUserResponse(
 ): UserResponse =
     UserResponse(
         id = id,
+        email = email,
         username = username,
-        nickname = nickname,
         image = image,
         level = level,
         role = role,

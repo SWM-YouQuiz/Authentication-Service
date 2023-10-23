@@ -1,20 +1,19 @@
 package com.quizit.authentication.router
 
 import com.quizit.authentication.global.annotation.Router
-import com.quizit.authentication.handler.AuthenticationHandler
+import com.quizit.authentication.handler.AppleOAuth2Handler
 import org.springframework.context.annotation.Bean
 import org.springframework.web.reactive.function.server.RouterFunction
 import org.springframework.web.reactive.function.server.ServerResponse
 import org.springframework.web.reactive.function.server.router
 
 @Router
-class AuthenticationRouter {
+class AppleOAuth2Router {
     @Bean
-    fun authenticationRoutes(handler: AuthenticationHandler): RouterFunction<ServerResponse> =
+    fun oAuth2Routes(handler: AppleOAuth2Handler): RouterFunction<ServerResponse> =
         router {
-            "/auth".nest {
-                GET("/logout", handler::logout)
-                POST("/refresh", handler::refresh)
+            "/oauth2".nest {
+                POST("/redirect/apple", handler::redirect)
             }
         }
 }

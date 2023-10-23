@@ -1,5 +1,6 @@
 package com.quizit.authentication.config
 
+import com.github.jwt.authentication.JwtAuthenticationFilter
 import com.quizit.authentication.fixture.jwtProvider
 import com.quizit.authentication.global.config.SecurityConfiguration
 import com.quizit.authentication.handler.OAuth2LoginSuccessHandler
@@ -13,5 +14,10 @@ import org.springframework.security.web.server.SecurityWebFilterChain
 class SecurityTestConfiguration {
     @Bean
     fun filterChain(http: ServerHttpSecurity): SecurityWebFilterChain =
-        SecurityConfiguration().filterChain(http, jwtProvider, mockk<OAuth2LoginSuccessHandler>())
+        SecurityConfiguration()
+            .filterChain(http, jwtAuthenticationFilter(), mockk<OAuth2LoginSuccessHandler>())
+
+    @Bean
+    fun jwtAuthenticationFilter(): JwtAuthenticationFilter =
+        JwtAuthenticationFilter(jwtProvider)
 }
