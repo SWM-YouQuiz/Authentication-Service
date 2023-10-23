@@ -1,7 +1,6 @@
 package com.quizit.authentication.router
 
 import com.quizit.authentication.global.annotation.Router
-import com.quizit.authentication.global.util.queryParams
 import com.quizit.authentication.handler.GoogleOAuth2Handler
 import org.springframework.context.annotation.Bean
 import org.springframework.web.reactive.function.server.RouterFunction
@@ -15,7 +14,7 @@ class GoogleOAuth2Router {
         router {
             "/oauth2".nest {
                 GET("/revoke/google", handler::revoke)
-                POST("/redirect/google/revoke", queryParams("code"), handler::revokeRedirect)
+                POST("/redirect/google/revoke", handler::revokeRedirect)
             }
         }
 }
