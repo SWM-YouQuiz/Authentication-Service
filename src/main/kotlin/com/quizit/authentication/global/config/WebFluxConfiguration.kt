@@ -11,9 +11,10 @@ class WebFluxConfiguration(
     private val frontendUrl: String
 ) : WebFluxConfigurer {
     override fun addCorsMappings(registry: CorsRegistry) {
-        registry.addMapping("/**").apply {
-            allowedOrigins(frontendUrl)
-            allowCredentials(true)
-        }
+        registry.addMapping("/**")
+            .apply {
+                allowedOrigins(frontendUrl, "https://appleid.apple.com")
+                allowCredentials(true)
+            }
     }
 }
