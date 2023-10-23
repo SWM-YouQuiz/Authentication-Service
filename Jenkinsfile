@@ -78,7 +78,7 @@ pipeline{
             steps{
                 container('kaniko'){
                     script{
-                        sh "executor --dockerfile=Dockerfile --context=dir://${env.WORKSPACE} --destination=${env.ECR_AUTH_SERVICE}:${env.tag}"
+                        sh "executor --build-arg QUIZIT_PROFILE=${branch.split("/")[2]} --dockerfile=Dockerfile --context=dir://${env.WORKSPACE} --destination=${env.ECR_AUTH_SERVICE}:${env.tag}"
                     }
                 }
             }
@@ -97,10 +97,10 @@ pipeline{
                     script {
                         dir('helm') {
                             git url: 'https://github.com/SWM-YouQuiz/Helm.git',
-                                branch: 'dev',
+                                branch: "${branch.split("/")[2]}",
                                 credentialsId: "github_personal_access_token"
 
-                            sh "yq e -i -P '.quizItService.auth.image.tag = \"${env.tag}\"' values-dev.yaml"
+                            sh "yq e -i -P '.quizItService.auth.image.tag = \"${env.tag}\"' values-${branch.split("/")[2]}.yaml"
                         }
                     }
                 }
@@ -113,7 +113,7 @@ pipeline{
                             sh "git add ."
                             sh "git commit -m '${env.tag}'"
 
-                            sh 'git push origin dev'
+                            sh "git push origin ${branch.split("/")[2]}"
                         }
                     }
                 }
