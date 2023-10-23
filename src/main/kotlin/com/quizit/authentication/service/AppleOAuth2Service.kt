@@ -6,12 +6,15 @@ import com.github.jwt.authentication.DefaultJwtAuthentication
 import com.github.jwt.core.DefaultJwtProvider
 import com.quizit.authentication.adapter.client.AppleClient
 import com.quizit.authentication.adapter.client.UserClient
+import com.quizit.authentication.adapter.producer.AuthenticationProducer
 import com.quizit.authentication.domain.AppleOAuth2UserInfo
 import com.quizit.authentication.domain.OAuth2UserInfo
 import com.quizit.authentication.domain.RefreshToken
 import com.quizit.authentication.domain.enum.Provider
+import com.quizit.authentication.dto.event.RevokeOAuthEvent
 import com.quizit.authentication.dto.request.CreateUserRequest
 import com.quizit.authentication.exception.UserNotFoundException
+import com.quizit.authentication.global.util.component1
 import com.quizit.authentication.repository.TokenRepository
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
@@ -20,6 +23,7 @@ import org.springframework.stereotype.Service
 import org.springframework.util.MultiValueMap
 import org.springframework.web.reactive.function.server.ServerResponse
 import reactor.core.publisher.Mono
+import reactor.core.scheduler.Schedulers
 import reactor.kotlin.core.publisher.onErrorResume
 import reactor.kotlin.core.publisher.switchIfEmpty
 import java.net.URI
@@ -29,6 +33,7 @@ class AppleOAuth2Service(
     private val appleClient: AppleClient,
     private val tokenRepository: TokenRepository,
     private val userClient: UserClient,
+    private val authenticationProducer: AuthenticationProducer,
     private val objectMapper: ObjectMapper,
     private val jwtProvider: DefaultJwtProvider,
     @Value("\${url.frontend}")
@@ -47,12 +52,42 @@ class AppleOAuth2Service(
                 )
             }
             .switchIfEmpty {
-                appleClient.getTokenResponseByCode(loginResponse["code"]!!.first())
+                appleClient.getTokenResponseByCodeAndRedirectUri(
+                    loginResponse["code"]!!.first(), "$frontendUrl/api/auth/oauth2/redirect/apple"
+                )
                     .flatMap { appleClient.getOAuth2UserByToken(it["id_token"] as String) }
             }
             .flatMap { it.onAuthenticationSuccess() }
 
-    private fun OAuth2UserInfo.onAuthenticationSuccess(): Mono<ServerResponse> {
+    fun revokeRedirect(loginResponse: MultiValueMap<String, String>): Mono<ServerResponse> =
+        appleClient.getTokenResponseByCodeAndRedirectUri(
+            loginResponse["code"]!!.first(), "$frontendUrl/api/auth/oauth2/redirect/apple/revoke"
+        )
+            .flatMap {
+                Mono.zip(
+                    appleClient.getOAuth2UserByToken(it["id_token"] as String)
+                        .subscribeOn(Schedulers.boundedElastic()),
+                    appleClient.revokeByToken(it["access_token"] as String)
+                        .subscribeOn(Schedulers.boundedElastic())
+                )
+            }
+            .flatMap { (oAuth2User) ->
+                oAuth2User.run {
+                    authenticationProducer.revokeOAuth(
+                        RevokeOAuthEvent(
+                            email = email,
+                            provider = provider
+                        )
+                    )
+                }
+            }
+            .then(Mono.defer {
+                ServerResponse.status(HttpStatus.FOUND)
+                    .location(URI.create(frontendUrl))
+                    .build()
+            })
+
+    fun OAuth2UserInfo.onAuthenticationSuccess(): Mono<ServerResponse> {
         var isSignUp = false
 
         return userClient.getUserByEmailAndProvider(email, provider)

@@ -1,8 +1,8 @@
 package com.quizit.authentication.handler
 
 import com.quizit.authentication.global.annotation.Handler
-import com.quizit.authentication.global.oauth.AppleOAuth2Provider
-import com.quizit.authentication.service.AppleOAuth2Service
+import com.quizit.authentication.global.util.queryParamNotNull
+import com.quizit.authentication.service.KakaoOAuth2Service
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.web.reactive.function.server.ServerRequest
@@ -11,9 +11,10 @@ import reactor.core.publisher.Mono
 import java.net.URI
 
 @Handler
-class AppleOAuth2Handler(
-    private val appleOAuth2Service: AppleOAuth2Service,
-    private val appleOAuth2Provider: AppleOAuth2Provider,
+class KakaoOAuth2Handler(
+    private val kakaoOAuth2Service: KakaoOAuth2Service,
+    @Value("\${spring.security.oauth2.client.registration.kakao.client-id}")
+    private val clientId: String,
     @Value("\${url.frontend}")
     private val frontendUrl: String
 ) {
@@ -21,15 +22,10 @@ class AppleOAuth2Handler(
         ServerResponse.status(HttpStatus.FOUND)
             .location(
                 URI.create(
-                    "https://appleid.apple.com/auth/authorize?response_mode=form_post&response_type=code&client_id=${appleOAuth2Provider.clientId}&scope=name%20email&&redirect_uri=$frontendUrl/api/auth/oauth2/redirect/apple/revoke"
+                    "https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=$clientId&scope=profile_nickname%20account_email&redirect_uri=$frontendUrl/api/auth/oauth2/redirect/kakao/revoke"
                 )
             ).build()
 
-    fun loginRedirect(request: ServerRequest): Mono<ServerResponse> =
-        request.formData()
-            .flatMap { appleOAuth2Service.loginRedirect(it) }
-
     fun revokeRedirect(request: ServerRequest): Mono<ServerResponse> =
-        request.formData()
-            .flatMap { appleOAuth2Service.revokeRedirect(it) }
+        kakaoOAuth2Service.revokeRedirect(request.queryParamNotNull("code"))
 }

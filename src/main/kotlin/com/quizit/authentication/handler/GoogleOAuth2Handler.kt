@@ -1,8 +1,8 @@
 package com.quizit.authentication.handler
 
 import com.quizit.authentication.global.annotation.Handler
-import com.quizit.authentication.global.oauth.AppleOAuth2Provider
-import com.quizit.authentication.service.AppleOAuth2Service
+import com.quizit.authentication.global.util.queryParamNotNull
+import com.quizit.authentication.service.GoogleOAuth2Service
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.web.reactive.function.server.ServerRequest
@@ -11,9 +11,10 @@ import reactor.core.publisher.Mono
 import java.net.URI
 
 @Handler
-class AppleOAuth2Handler(
-    private val appleOAuth2Service: AppleOAuth2Service,
-    private val appleOAuth2Provider: AppleOAuth2Provider,
+class GoogleOAuth2Handler(
+    private val googleOAuth2Service: GoogleOAuth2Service,
+    @Value("\${spring.security.oauth2.client.registration.google.client-id}")
+    private val clientId: String,
     @Value("\${url.frontend}")
     private val frontendUrl: String
 ) {
@@ -21,15 +22,11 @@ class AppleOAuth2Handler(
         ServerResponse.status(HttpStatus.FOUND)
             .location(
                 URI.create(
-                    "https://appleid.apple.com/auth/authorize?response_mode=form_post&response_type=code&client_id=${appleOAuth2Provider.clientId}&scope=name%20email&&redirect_uri=$frontendUrl/api/auth/oauth2/redirect/apple/revoke"
+                    "https://accounts.google.com/o/oauth2/v2/auth?access_type=offline&prompt=consent&response_type=code&client_id=$clientId&redirect_uri=$frontendUrl/api/auth/oauth2/redirect/google/revoke&scope=profile%20email"
                 )
             ).build()
 
-    fun loginRedirect(request: ServerRequest): Mono<ServerResponse> =
-        request.formData()
-            .flatMap { appleOAuth2Service.loginRedirect(it) }
-
     fun revokeRedirect(request: ServerRequest): Mono<ServerResponse> =
-        request.formData()
-            .flatMap { appleOAuth2Service.revokeRedirect(it) }
+        googleOAuth2Service.revokeRedirect(request.queryParamNotNull("code"))
+
 }
