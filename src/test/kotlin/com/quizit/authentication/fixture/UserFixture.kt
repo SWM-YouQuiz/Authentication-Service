@@ -7,7 +7,6 @@ import java.time.LocalDateTime
 
 const val EMAIL = "email"
 const val USERNAME = "username"
-const val PASSWORD = "password"
 const val IMAGE = "image"
 const val LEVEL = 2
 val ROLE = Role.USER
@@ -18,9 +17,6 @@ val PROVIDER = Provider.GOOGLE
 val CORRECT_QUIZ_IDS = hashSetOf("1")
 val INCORRECT_QUIZ_IDS = hashSetOf("1")
 val MARKED_QUIZ_IDS = hashSetOf("1")
-const val IS_MATCHED = true
-const val INVALID_USERNAME = "invalid_username"
-const val INVALID_PASSWORD = "invalid_password"
 
 fun createUserResponse(
     id: String = ID,
