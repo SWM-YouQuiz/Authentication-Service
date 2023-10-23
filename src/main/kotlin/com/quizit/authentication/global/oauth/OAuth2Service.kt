@@ -1,4 +1,4 @@
-package com.quizit.authentication.service
+package com.quizit.authentication.global.oauth
 
 import com.quizit.authentication.adapter.client.UserClient
 import com.quizit.authentication.domain.GoogleOAuth2UserInfo

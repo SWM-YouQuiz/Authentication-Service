@@ -13,7 +13,7 @@ class AppleOAuth2Router {
     fun oAuth2Routes(handler: AppleOAuth2Handler): RouterFunction<ServerResponse> =
         router {
             "/oauth2".nest {
-                POST("/redirect/apple", handler::redirect)
+                POST("/redirect/apple", handler::loginRedirect)
             }
         }
 }

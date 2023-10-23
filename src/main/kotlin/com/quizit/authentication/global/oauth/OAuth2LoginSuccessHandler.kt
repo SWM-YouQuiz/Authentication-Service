@@ -1,4 +1,4 @@
-package com.quizit.authentication.handler
+package com.quizit.authentication.global.oauth
 
 import com.github.jwt.authentication.DefaultJwtAuthentication
 import com.github.jwt.core.DefaultJwtProvider
@@ -9,7 +9,6 @@ import com.quizit.authentication.dto.request.CreateUserRequest
 import com.quizit.authentication.exception.UserNotFoundException
 import com.quizit.authentication.global.annotation.Handler
 import com.quizit.authentication.repository.TokenRepository
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseCookie
 import org.springframework.security.core.Authentication
@@ -26,8 +25,6 @@ class OAuth2LoginSuccessHandler(
     private val tokenRepository: TokenRepository,
     private val userClient: UserClient,
     private val jwtProvider: DefaultJwtProvider,
-    @Value("\${spring.security.oauth2.redirectUrl}")
-    private val url: String
 ) : ServerAuthenticationSuccessHandler {
     override fun onAuthenticationSuccess(
         webFilterExchange: WebFilterExchange, authentication: Authentication
@@ -66,7 +63,7 @@ class OAuth2LoginSuccessHandler(
                 ).then(
                     webFilterExchange.exchange.response.apply {
                         statusCode = HttpStatus.FOUND
-                        headers.location = URI("$url?isSignUp=$isSignUp")
+                        headers.location = URI("https://quizit.org/login-redirection?isSignUp=$isSignUp")
                         mapOf(
                             "accessToken" to accessToken,
                             "refreshToken" to refreshToken,

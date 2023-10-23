@@ -39,4 +39,3 @@ spring:
             scope:
               - profile_nickname
               - account_email
-      redirectUrl: ${OAUTH_REDIRECT_URL}

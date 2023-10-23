@@ -3,7 +3,7 @@ package com.quizit.authentication.global.config
 import com.github.jwt.authentication.JwtAuthenticationFilter
 import com.github.jwt.core.JwtProvider
 import com.quizit.authentication.domain.enum.Role
-import com.quizit.authentication.handler.OAuth2LoginSuccessHandler
+import com.quizit.authentication.global.oauth.OAuth2LoginSuccessHandler
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpStatus

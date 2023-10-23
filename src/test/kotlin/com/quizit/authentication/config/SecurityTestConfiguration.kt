@@ -3,7 +3,7 @@ package com.quizit.authentication.config
 import com.github.jwt.authentication.JwtAuthenticationFilter
 import com.quizit.authentication.fixture.jwtProvider
 import com.quizit.authentication.global.config.SecurityConfiguration
-import com.quizit.authentication.handler.OAuth2LoginSuccessHandler
+import com.quizit.authentication.global.oauth.OAuth2LoginSuccessHandler
 import io.mockk.mockk
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
