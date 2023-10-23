@@ -15,7 +15,6 @@ import com.quizit.authentication.exception.UserNotFoundException
 import com.quizit.authentication.repository.TokenRepository
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseCookie
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.stereotype.Service
 import org.springframework.util.MultiValueMap
@@ -24,7 +23,6 @@ import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.onErrorResume
 import reactor.kotlin.core.publisher.switchIfEmpty
 import java.net.URI
-import java.time.Duration
 
 @Service
 class AppleOAuth2Service(
@@ -87,22 +85,9 @@ class AppleOAuth2Service(
                     )
                 ).then(
                     ServerResponse.status(HttpStatus.FOUND)
-                        .location(URI.create("$frontendUrl/login-redirection?isSignUp=$isSignUp"))
-                        .cookies {
-                            mapOf(
-                                "accessToken" to accessToken,
-                                "refreshToken" to refreshToken,
-                            ).map { cookie ->
-                                it.set(
-                                    cookie.key, ResponseCookie.from(cookie.key, cookie.value)
-                                        .httpOnly(true)
-                                        .secure(true)
-                                        .maxAge(Duration.ofMinutes(10))
-                                        .path("$frontendUrl/")
-                                        .build()
-                                )
-                            }
-                        }
+                        .location(
+                            URI("$frontendUrl/login-redirection?isSignUp=$isSignUp&accessToken=${accessToken}&refreshToken=${refreshToken}")
+                        )
                         .build()
                 )
             }

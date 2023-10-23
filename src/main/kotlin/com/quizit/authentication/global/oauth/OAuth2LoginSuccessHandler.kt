@@ -11,7 +11,6 @@ import com.quizit.authentication.global.annotation.Handler
 import com.quizit.authentication.repository.TokenRepository
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseCookie
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.web.server.WebFilterExchange
@@ -19,7 +18,6 @@ import org.springframework.security.web.server.authentication.ServerAuthenticati
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.onErrorResume
 import java.net.URI
-import java.time.Duration
 
 @Handler
 class OAuth2LoginSuccessHandler(
@@ -66,20 +64,8 @@ class OAuth2LoginSuccessHandler(
                 ).then(
                     webFilterExchange.exchange.response.apply {
                         statusCode = HttpStatus.FOUND
-                        headers.location = URI("$frontendUrl/login-redirection?isSignUp=$isSignUp")
-                        mapOf(
-                            "accessToken" to accessToken,
-                            "refreshToken" to refreshToken,
-                        ).map { cookie ->
-                            cookies.set(
-                                cookie.key, ResponseCookie.from(cookie.key, cookie.value)
-                                    .httpOnly(true)
-                                    .secure(true)
-                                    .maxAge(Duration.ofMinutes(10))
-                                    .path("$frontendUrl/")
-                                    .build()
-                            )
-                        }
+                        headers.location =
+                            URI("$frontendUrl/login-redirection?isSignUp=$isSignUp&accessToken=${accessToken}&refreshToken=${refreshToken}")
                     }.setComplete()
                 )
             }
