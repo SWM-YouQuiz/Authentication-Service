@@ -37,9 +37,9 @@ class AppleOAuth2Service(
     private val frontendUrl: String
 ) {
     fun loginRedirect(loginResponse: MultiValueMap<String, String>): Mono<ServerResponse> =
-        Mono.justOrEmpty(loginResponse["user"]?.first()!!)
+        Mono.justOrEmpty(loginResponse["user"]?.firstOrNull())
             .map {
-                val user = objectMapper.readValue<Map<String, Any>>(it)
+                val user = objectMapper.readValue<Map<String, Any>>(it!!)
                 val name = (user["name"] as Map<String, String>).run { get("lastName") + get("firstName") }
                 val email = user["email"] as String
 
