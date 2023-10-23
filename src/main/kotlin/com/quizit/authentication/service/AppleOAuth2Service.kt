@@ -47,8 +47,8 @@ class AppleOAuth2Service(
                 )
             }
             .switchIfEmpty {
-                appleClient.getIdTokenByCode(loginResponse["code"]!!.first())
-                    .flatMap { appleClient.getOAuth2UserByToken(it) }
+                appleClient.getTokenResponseByCode(loginResponse["code"]!!.first())
+                    .flatMap { appleClient.getOAuth2UserByToken(it["id_token"] as String) }
             }
             .flatMap { it.onAuthenticationSuccess() }
 
