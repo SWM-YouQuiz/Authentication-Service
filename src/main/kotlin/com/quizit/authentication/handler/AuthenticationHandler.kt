@@ -11,7 +11,7 @@ import org.springframework.web.reactive.function.server.body
 import org.springframework.web.reactive.function.server.bodyToMono
 import reactor.core.publisher.Mono
 
-@Component
+@Handler
 class AuthenticationHandler(
     private val authenticationService: AuthenticationService
 ) {

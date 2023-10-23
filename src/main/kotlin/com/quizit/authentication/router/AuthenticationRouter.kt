@@ -7,7 +7,7 @@ import org.springframework.web.reactive.function.server.RouterFunction
 import org.springframework.web.reactive.function.server.ServerResponse
 import org.springframework.web.reactive.function.server.router
 
-@Configuration
+@Router
 class AuthenticationRouter {
     @Bean
     fun authenticationRoutes(handler: AuthenticationHandler): RouterFunction<ServerResponse> =

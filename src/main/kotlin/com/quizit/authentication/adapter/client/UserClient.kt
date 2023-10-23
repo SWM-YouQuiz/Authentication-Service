@@ -14,7 +14,7 @@ import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.bodyToMono
 import reactor.core.publisher.Mono
 
-@Component
+@Client
 class UserClient(
     private val webClient: WebClient,
     @Value("\${url.service.user}")
