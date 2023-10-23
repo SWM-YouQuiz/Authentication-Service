@@ -4,15 +4,15 @@ import com.quizit.authentication.config.RedisTestConfiguration
 import com.quizit.authentication.fixture.ID
 import com.quizit.authentication.fixture.REFRESH_TOKEN_EXPIRE
 import com.quizit.authentication.fixture.createToken
+import com.quizit.authentication.util.getResult
 import io.kotest.core.spec.style.ExpectSpec
 import io.kotest.core.test.TestCase
-import io.kotest.matchers.equality.shouldBeEqualToComparingFields
-import io.kotest.matchers.equality.shouldNotBeEqualToComparingFields
+import io.kotest.matchers.equals.shouldBeEqual
+import io.kotest.matchers.equals.shouldNotBeEqual
 import io.kotest.matchers.nulls.shouldBeNull
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.redis.core.ReactiveRedisTemplate
 import org.springframework.test.context.ContextConfiguration
-import reactor.test.StepVerifier
 
 @ContextConfiguration(classes = [RedisTestConfiguration::class])
 class TokenRepositoryTest : ExpectSpec() {
@@ -42,10 +42,11 @@ class TokenRepositoryTest : ExpectSpec() {
                 }
 
             expect("특정 유저의 리프레쉬 토큰을 조회한다.") {
-                val result = StepVerifier.create(tokenRepository.findByUserId(ID))
+                val result = tokenRepository.findByUserId(ID)
+                    .getResult()
 
                 result.expectSubscription()
-                    .assertNext { it shouldBeEqualToComparingFields refreshToken }
+                    .assertNext { it shouldBeEqual refreshToken }
                     .verifyComplete()
             }
         }
@@ -58,12 +59,13 @@ class TokenRepositoryTest : ExpectSpec() {
                 }
 
             expect("특정 유저의 리프레쉬 토큰을 수정한다.") {
-                val result = StepVerifier.create(tokenRepository.save(createToken(content = "updated_content")))
+                val result = tokenRepository.save(createToken(content = "updated_content"))
+                    .getResult()
 
                 result.expectSubscription()
                     .assertNext {
                         tokenRepository.findByUserId(ID)
-                            .subscribe { it shouldNotBeEqualToComparingFields refreshToken }
+                            .subscribe { it shouldNotBeEqual refreshToken }
                     }
                     .verifyComplete()
             }
@@ -77,7 +79,8 @@ class TokenRepositoryTest : ExpectSpec() {
                 }
 
             expect("특정 유저의 리프레쉬 토큰을 삭제한다.") {
-                val result = StepVerifier.create(tokenRepository.deleteByUserId(ID))
+                val result = tokenRepository.deleteByUserId(ID)
+                    .getResult()
 
                 result.expectSubscription()
                     .assertNext {
