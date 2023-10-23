@@ -18,7 +18,7 @@ sealed class OAuth2UserInfo(
 }
 
 class GoogleOAuth2UserInfo(
-    private val attributes: Map<String, *>
+    attributes: Map<String, *>
 ) : OAuth2UserInfo(
     email = attributes["email"] as String,
     provider = Provider.GOOGLE,
@@ -37,7 +37,7 @@ class AppleOAuth2UserInfo(
 )
 
 class KakaoOAuth2UserInfo(
-    private val attributes: Map<String, *>
+    attributes: Map<String, *>
 ) : OAuth2UserInfo(
     email = (attributes["kakao_account"] as Map<*, *>)["email"] as String,
     provider = Provider.KAKAO,
