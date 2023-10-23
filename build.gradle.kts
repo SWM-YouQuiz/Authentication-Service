@@ -29,7 +29,9 @@ configurations {
 }
 
 dependencies {
+    implementation("org.springframework.kafka:spring-kafka")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
+    implementation("org.springframework.boot:spring-boot-starter-aop")
     implementation("org.springframework.boot:spring-boot-starter-data-redis-reactive")
     implementation("org.springframework.boot:spring-boot-starter-log4j2")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
@@ -42,6 +44,7 @@ dependencies {
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml")
     implementation("com.github.earlgrey02:JWT-Module:2.0.2")
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
+    implementation("io.projectreactor.kafka:reactor-kafka")
     implementation("io.github.microutils:kotlin-logging:3.0.5")
     implementation("io.jsonwebtoken:jjwt-api:0.11.5")
     implementation("commons-io:commons-io:2.14.0")
@@ -97,10 +100,11 @@ tasks {
                 excludes = listOf(
                     "**.*Application*",
                     "**.*Configuration*",
-                    "**.*Request*",
-                    "**.*Response*",
                     "**.*Exception*",
                     "**.*Util*",
+                    "**.*Aspect*",
+                    "**.*Request*",
+                    "**.*Response*",
                     "**.*Client*",
                     "**.*Producer*",
                     "**.*Consumer*",
