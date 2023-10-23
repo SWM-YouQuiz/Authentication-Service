@@ -2,9 +2,7 @@ package com.quizit.authentication.service
 
 import com.github.jwt.core.DefaultJwtProvider
 import com.quizit.authentication.adapter.client.UserClient
-import com.quizit.authentication.domain.Token
-import com.quizit.authentication.dto.request.LoginRequest
-import com.quizit.authentication.dto.request.MatchPasswordRequest
+import com.quizit.authentication.domain.RefreshToken
 import com.quizit.authentication.dto.request.RefreshRequest
 import com.quizit.authentication.dto.response.RefreshResponse
 import com.quizit.authentication.exception.InvalidAccessException
@@ -37,7 +35,7 @@ class AuthenticationService(
                 val refreshToken = jwtProvider.createRefreshToken(it)
 
                 tokenRepository.save(
-                    Token(
+                    RefreshToken(
                         userId = it.id,
                         content = refreshToken
                     )

@@ -18,7 +18,7 @@ import org.springframework.restdocs.payload.PayloadDocumentation.responseFields
 import org.springframework.test.web.reactive.server.expectBody
 
 @WebFluxTest(AuthenticationHandler::class, AuthenticationRouter::class)
-class AuthenticationControllerTest : BaseControllerTest() {
+class AuthenticationControllerTest : ControllerTest() {
     @MockkBean
     private lateinit var authenticationService: AuthenticationService
 
