@@ -54,11 +54,17 @@ pipeline{
                 container('gradle'){
                     sh 'mkdir ./src/main/resources/static'
                     sh 'mkdir ./src/main/resources/static/docs'
+                }
+                container('aws'){
+                    sh "aws s3 cp s3://quizit-storage/private_key.p8 src/main/resources/static/private_key.p8"
+                }
 
+                container('gradle'){
                     sh 'gradle build'
 
                     sh 'mv ./build/libs/auth-service.jar ./'
                 }
+
             }
         }
         stage('aws'){
