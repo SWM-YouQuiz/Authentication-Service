@@ -10,6 +10,7 @@ spring:
             user-name-attribute: id
           apple:
             authorization-uri: https://appleid.apple.com/auth/authorize
+            token-uri: https://appleid.apple.com/auth/token
             user-name-attribute: sub
         registration:
           google:
@@ -24,6 +25,7 @@ spring:
             key-id: ${APPLE_KEY_ID}
             redirect-uri: ${APPLE_REDIRECT_URI}
             authorization-grant-type: authorization_code
+            client-authentication-method: client_secret_post
             client-name: apple
             scope:
               - name
@@ -31,10 +33,9 @@ spring:
           kakao:
             client-id: ${KAKAO_CLIENT_ID}
             client-secret: ${KAKAO_CLIENT_SECRET}
-            client-authentication-method: client_secret_post
             redirect-uri: ${KAKAO_REDIRECT_URI}
+            client-authentication-method: client_secret_post
             authorization-grant-type: authorization_code
-            client-name: kakao
             scope:
               - profile_nickname
               - account_email
