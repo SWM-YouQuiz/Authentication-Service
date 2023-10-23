@@ -18,6 +18,7 @@ import com.quizit.authentication.global.util.component1
 import com.quizit.authentication.repository.TokenRepository
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseCookie
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.stereotype.Service
 import org.springframework.util.MultiValueMap
@@ -27,6 +28,7 @@ import reactor.core.scheduler.Schedulers
 import reactor.kotlin.core.publisher.onErrorResume
 import reactor.kotlin.core.publisher.switchIfEmpty
 import java.net.URI
+import java.time.Duration
 
 @Service
 class AppleOAuth2Service(
@@ -37,7 +39,9 @@ class AppleOAuth2Service(
     private val objectMapper: ObjectMapper,
     private val jwtProvider: DefaultJwtProvider,
     @Value("\${url.frontend}")
-    private val frontendUrl: String
+    private val frontendUrl: String,
+    @Value("\${jwt.refreshTokenExpire}")
+    private val expire: Long,
 ) {
     fun loginRedirect(loginResponse: MultiValueMap<String, String>): Mono<ServerResponse> =
         Mono.justOrEmpty(loginResponse["user"]?.firstOrNull())
@@ -121,7 +125,15 @@ class AppleOAuth2Service(
                 ).then(
                     ServerResponse.status(HttpStatus.FOUND)
                         .location(
-                            URI("$frontendUrl/login-redirection?isSignUp=$isSignUp&accessToken=${accessToken}&refreshToken=${refreshToken}")
+                            URI("$frontendUrl/login-redirection?isSignUp=$isSignUp&accessToken=${accessToken}")
+                        )
+                        .cookie(
+                            ResponseCookie.from("refreshToken", refreshToken)
+                                .path("$frontendUrl/")
+                                .httpOnly(true)
+                                .secure(true)
+                                .maxAge(Duration.ofMinutes(expire))
+                                .build()
                         )
                         .build()
                 )
