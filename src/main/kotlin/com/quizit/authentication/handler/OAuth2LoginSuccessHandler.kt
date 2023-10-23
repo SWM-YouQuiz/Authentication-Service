@@ -35,7 +35,7 @@ class OAuth2LoginSuccessHandler(
         val oAuth2User = authentication.principal as OAuth2UserInfo
         var isSignUp = false
 
-        return userClient.getUserByUsernameAndProvider(oAuth2User.email, oAuth2User.provider)
+        return userClient.getUserByEmailAndProvider(oAuth2User.email, oAuth2User.provider)
             .onErrorResume(UserNotFoundException::class) {
                 isSignUp = true
 

@@ -18,9 +18,9 @@ class UserClient(
     @Value("\${url.service.user}")
     private val url: String
 ) {
-    fun getUserByUsernameAndProvider(username: String, provider: Provider): Mono<UserResponse> =
+    fun getUserByEmailAndProvider(email: String, provider: Provider): Mono<UserResponse> =
         webClient.get()
-            .uri("$url/user/username/{username}?provider={provider}", username, provider)
+            .uri("$url/user/email/{email}?provider={provider}", email, provider)
             .retrieve()
             .onStatus(HttpStatus.NOT_FOUND::equals) { Mono.error(UserNotFoundException()) }
             .bodyToMono<UserResponse>()
