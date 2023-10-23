@@ -1,7 +1,6 @@
 package com.quizit.authentication.service
 
 import com.github.jwt.core.DefaultJwtProvider
-import com.quizit.authentication.adapter.client.UserClient
 import com.quizit.authentication.domain.RefreshToken
 import com.quizit.authentication.dto.request.RefreshRequest
 import com.quizit.authentication.dto.response.RefreshResponse
@@ -14,7 +13,6 @@ import reactor.core.publisher.Mono
 @Service
 class AuthenticationService(
     private val tokenRepository: TokenRepository,
-    private val userClient: UserClient,
     private val jwtProvider: DefaultJwtProvider,
 ) {
     fun logout(userId: String): Mono<Void> =

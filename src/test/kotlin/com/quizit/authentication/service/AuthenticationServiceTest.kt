@@ -1,6 +1,5 @@
 package com.quizit.authentication.service
 
-import com.quizit.authentication.adapter.client.UserClient
 import com.quizit.authentication.exception.InvalidAccessException
 import com.quizit.authentication.exception.TokenNotFoundException
 import com.quizit.authentication.fixture.ID
@@ -21,12 +20,9 @@ import reactor.kotlin.test.expectError
 class AuthenticationServiceTest : BehaviorSpec() {
     private val tokenRepository = mockk<TokenRepository>()
 
-    private val userClient = mockk<UserClient>()
-
     private val authenticationService =
         AuthenticationService(
             tokenRepository = tokenRepository,
-            userClient = userClient,
             jwtProvider = jwtProvider,
         )
 

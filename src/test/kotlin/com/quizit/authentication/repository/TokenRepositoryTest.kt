@@ -4,6 +4,7 @@ import com.quizit.authentication.config.RedisTestConfiguration
 import com.quizit.authentication.fixture.ID
 import com.quizit.authentication.fixture.REFRESH_TOKEN_EXPIRE
 import com.quizit.authentication.fixture.createToken
+import com.quizit.authentication.fixture.createUserResponse
 import com.quizit.authentication.util.getResult
 import io.kotest.core.spec.style.ExpectSpec
 import io.kotest.core.test.TestCase
@@ -35,6 +36,8 @@ class TokenRepositoryTest : ExpectSpec() {
 
     init {
         context("리프레쉬 토큰 조회") {
+            createUserResponse() // Code Coverage
+
             val refreshToken = createToken()
                 .also {
                     tokenRepository.save(it)
