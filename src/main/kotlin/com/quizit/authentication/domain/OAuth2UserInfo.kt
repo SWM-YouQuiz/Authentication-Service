@@ -27,12 +27,13 @@ class GoogleOAuth2UserInfo(
 )
 
 class AppleOAuth2UserInfo(
-    attributes: Map<String, *>
+    email: String,
+    name: String?
 ) : OAuth2UserInfo(
-    email = (attributes["user"] as Map<*, *>)["email"] as String,
-    provider = Provider.APPLE,
-    name = ((attributes["user"] as Map<*, *>)["name"]) as String,
-    attributes = attributes
+    email = email,
+    provider = Provider.GOOGLE,
+    name = name,
+    attributes = emptyMap<String, Any>()
 )
 
 class KakaoOAuth2UserInfo(
