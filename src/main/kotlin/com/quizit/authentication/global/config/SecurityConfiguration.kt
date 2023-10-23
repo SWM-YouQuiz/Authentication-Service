@@ -41,9 +41,9 @@ class SecurityConfiguration {
                     .hasAuthority(Role.ADMIN.name)
                     .pathMatchers(
                         "/actuator/health/**",
-                        "/auth/login",
                         "/oauth2/**",
-                        "/login/**"
+                        "/login/**",
+                        "/auth/refresh"
                     )
                     .permitAll()
                     .anyExchange()
