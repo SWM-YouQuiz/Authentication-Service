@@ -11,6 +11,7 @@ import com.quizit.authentication.global.annotation.Handler
 import com.quizit.authentication.repository.TokenRepository
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseCookie
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.web.server.WebFilterExchange
@@ -18,6 +19,7 @@ import org.springframework.security.web.server.authentication.ServerAuthenticati
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.onErrorResume
 import java.net.URI
+import java.time.Duration
 
 @Handler
 class OAuth2LoginSuccessHandler(
@@ -25,7 +27,9 @@ class OAuth2LoginSuccessHandler(
     private val userClient: UserClient,
     private val jwtProvider: DefaultJwtProvider,
     @Value("\${url.frontend}")
-    private val frontendUrl: String
+    private val frontendUrl: String,
+    @Value("\${jwt.refreshTokenExpire}")
+    private val expire: Long,
 ) : ServerAuthenticationSuccessHandler {
     override fun onAuthenticationSuccess(
         webFilterExchange: WebFilterExchange, authentication: Authentication
@@ -65,7 +69,15 @@ class OAuth2LoginSuccessHandler(
                     webFilterExchange.exchange.response.apply {
                         statusCode = HttpStatus.FOUND
                         headers.location =
-                            URI("$frontendUrl/login-redirection?isSignUp=$isSignUp&accessToken=${accessToken}&refreshToken=${refreshToken}")
+                            URI("$frontendUrl/login-redirection?isSignUp=$isSignUp&accessToken=${accessToken}")
+                        cookies.set(
+                            "refreshToken", ResponseCookie.from("refreshToken", refreshToken)
+                                .path("$frontendUrl/")
+                                .httpOnly(true)
+                                .secure(true)
+                                .maxAge(Duration.ofMinutes(expire))
+                                .build()
+                        )
                     }.setComplete()
                 )
             }
