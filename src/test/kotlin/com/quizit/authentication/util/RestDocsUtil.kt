@@ -1,6 +1,8 @@
 package com.quizit.authentication.util
 
 import com.epages.restdocs.apispec.WebTestClientRestDocumentationWrapper
+import org.springframework.restdocs.cookies.CookieDescriptor
+import org.springframework.restdocs.cookies.CookieDocumentation
 import org.springframework.restdocs.operation.preprocess.Preprocessors
 import org.springframework.restdocs.payload.FieldDescriptor
 import org.springframework.restdocs.payload.PayloadDocumentation
@@ -16,6 +18,10 @@ infix fun String.desc(description: String): FieldDescriptor =
 
 infix fun String.paramDesc(description: String): ParameterDescriptor =
     RequestDocumentation.parameterWithName(this)
+        .description(description)
+
+infix fun String.cookieDesc(description: String): CookieDescriptor =
+    CookieDocumentation.cookieWithName(this)
         .description(description)
 
 fun List<FieldDescriptor>.toListFields(): List<FieldDescriptor> =
