@@ -4,8 +4,10 @@ import com.github.jwt.core.DefaultJwtProvider
 import com.quizit.authentication.domain.RefreshToken
 import com.quizit.authentication.dto.response.RefreshResponse
 import com.quizit.authentication.exception.InvalidAccessException
+import com.quizit.authentication.exception.InvalidTokenException
 import com.quizit.authentication.exception.TokenNotFoundException
 import com.quizit.authentication.repository.TokenRepository
+import io.jsonwebtoken.JwtException
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 
@@ -19,8 +21,13 @@ class AuthenticationService(
             .then()
 
     fun refresh(token: String): Mono<Pair<RefreshResponse, String>> =
-        with(jwtProvider.getAuthentication(token))
-        {
+        with(
+            try {
+                jwtProvider.getAuthentication(token)
+            } catch (ex: JwtException) {
+                throw InvalidTokenException()
+            }
+        ) {
             tokenRepository.findByUserId(id)
                 .switchIfEmpty(Mono.error(TokenNotFoundException()))
                 .filter { token == it.content }
