@@ -1,0 +1,10 @@
+jwt:
+  secretKey: dsaijodajadsjdsalkjadslkjadsljlajkdslkjadslkjadsjlklsad
+  accessTokenExpire: 30
+  refreshTokenExpire: 60
+url:
+  frontend: http://localhost:3000
+  service:
+    auth: http://localhost:8081/api/auth
+    user: http://localhost:8082/api/user
+    quiz: http://localhost:8083/api/quiz
