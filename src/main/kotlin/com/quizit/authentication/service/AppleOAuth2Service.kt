@@ -102,7 +102,8 @@ class AppleOAuth2Service(
                     CreateUserRequest(
                         email = email,
                         username = name!!,
-                        image = "",
+                        image = (1..6).map { "https://quizit-storage.s3.ap-northeast-2.amazonaws.com/character$it.svg" }
+                            .random(),
                         allowPush = true,
                         dailyTarget = 5,
                         provider = Provider.APPLE
