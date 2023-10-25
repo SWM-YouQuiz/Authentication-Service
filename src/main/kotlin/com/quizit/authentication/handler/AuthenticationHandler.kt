@@ -1,6 +1,6 @@
 package com.quizit.authentication.handler
 
-import com.quizit.authentication.exception.InvalidAccessException
+import com.quizit.authentication.exception.InvalidTokenException
 import com.quizit.authentication.global.annotation.Handler
 import com.quizit.authentication.global.util.authentication
 import com.quizit.authentication.service.AuthenticationService
@@ -45,5 +45,5 @@ class AuthenticationHandler(
                             )
                             .bodyValue(response)
                     }
-            } ?: Mono.error(InvalidAccessException())
+            } ?: Mono.error(InvalidTokenException())
 }
