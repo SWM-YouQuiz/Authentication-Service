@@ -1,6 +1,6 @@
 package com.quizit.authentication.service
 
-import com.quizit.authentication.exception.InvalidAccessException
+import com.quizit.authentication.exception.InvalidTokenException
 import com.quizit.authentication.exception.TokenNotFoundException
 import com.quizit.authentication.fixture.ID
 import com.quizit.authentication.fixture.REFRESH_TOKEN
@@ -10,6 +10,7 @@ import com.quizit.authentication.repository.TokenRepository
 import com.quizit.authentication.util.empty
 import com.quizit.authentication.util.getResult
 import com.quizit.authentication.util.returns
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.shouldBe
 import io.mockk.every
@@ -56,13 +57,10 @@ class AuthenticationServiceTest : BehaviorSpec() {
             }
 
             When("유효하지 않은 리프레쉬 토큰으로 로그인 유지를 시도하면") {
-                val result = authenticationService.refresh("invalid_token")
-                    .getResult()
-
                 Then("예외가 발생한다.") {
-                    result.expectSubscription()
-                        .expectError<InvalidAccessException>()
-                        .verify()
+                    shouldThrow<InvalidTokenException> {
+                        authenticationService.refresh("invalid_token")
+                    }
                 }
             }
         }
