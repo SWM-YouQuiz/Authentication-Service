@@ -14,7 +14,7 @@ class GoogleOAuth2Router {
         router {
             "/oauth2".nest {
                 GET("/revoke/google", handler::revoke)
-                POST("/redirect/google/revoke", handler::revokeRedirect)
+                GET("/redirect/google/revoke", handler::revokeRedirect)
             }
         }
 }
