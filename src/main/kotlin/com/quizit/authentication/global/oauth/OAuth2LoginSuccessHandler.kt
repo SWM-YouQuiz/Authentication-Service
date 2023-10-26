@@ -73,7 +73,7 @@ class OAuth2LoginSuccessHandler(
                             URI("$frontendUrl/login-redirection?isSignUp=$isSignUp&accessToken=${accessToken}")
                         cookies.set(
                             "refreshToken", ResponseCookie.from("refreshToken", refreshToken)
-                                .path("$frontendUrl/")
+                                .path("/")
                                 .httpOnly(true)
                                 .secure(true)
                                 .maxAge(Duration.ofMinutes(expire))
