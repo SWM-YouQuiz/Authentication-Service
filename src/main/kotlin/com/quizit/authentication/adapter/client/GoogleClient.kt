@@ -24,11 +24,11 @@ class GoogleClient(
             .bodyToMono<Map<String, *>>()
             .map { GoogleOAuth2UserInfo(it) }
 
-    fun getTokenResponseByCode(code: String): Mono<Map<String, Any>> =
+    fun getTokenResponseByCodeAndRedirectUri(code: String, redirectUri: String): Mono<Map<String, Any>> =
         webClient.post()
             .uri(
-                "https://oauth2.googleapis.com/token?grant_type=authorization_code&client_id={clientId}&client_secret={clientSecret}&code={code}",
-                clientId, clientSecret, code
+                "https://oauth2.googleapis.com/token?grant_type=authorization_code&client_id={clientId}&client_secret={clientSecret}&code={code}&redirect_uri=$redirectUri",
+                clientId, clientSecret, code, redirectUri
             )
             .retrieve()
             .bodyToMono<Map<String, Any>>()

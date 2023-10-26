@@ -20,7 +20,7 @@ class GoogleOAuth2Service(
     private val frontendUrl: String
 ) {
     fun revokeRedirect(code: String): Mono<ServerResponse> =
-        googleClient.getTokenResponseByCode(code)
+        googleClient.getTokenResponseByCodeAndRedirectUri(code, "$frontendUrl/api/auth/oauth2/redirect/google/revoke")
             .map { it["access_token"] as String }
             .flatMap {
                 Mono.zip(
