@@ -24,9 +24,7 @@ import org.springframework.stereotype.Service
 import org.springframework.util.MultiValueMap
 import org.springframework.web.reactive.function.server.ServerResponse
 import reactor.core.publisher.Mono
-import reactor.core.scheduler.Schedulers
 import reactor.kotlin.core.publisher.onErrorResume
-import reactor.kotlin.core.publisher.switchIfEmpty
 import java.net.URI
 import java.time.Duration
 
@@ -55,41 +53,37 @@ class AppleOAuth2Service(
                     name = name
                 )
             }
-            .switchIfEmpty {
-                appleClient.getTokenResponseByCodeAndRedirectUri(
-                    loginResponse["code"]!!.first(), "$frontendUrl/api/auth/oauth2/redirect/apple"
-                )
-                    .flatMap { appleClient.getOAuth2UserByToken(it["id_token"] as String) }
-            }
+            .switchIfEmpty(
+                Mono.defer {
+                    appleClient.getTokenResponseByCodeAndRedirectUri(
+                        loginResponse["code"]!!.first(), "$frontendUrl/api/auth/oauth2/redirect/apple"
+                    ).flatMap { appleClient.getOAuth2UserByToken(it["id_token"] as String) }
+                }
+            )
             .flatMap { it.onAuthenticationSuccess() }
 
     fun revokeRedirect(loginResponse: MultiValueMap<String, String>): Mono<ServerResponse> =
         appleClient.getTokenResponseByCodeAndRedirectUri(
             loginResponse["code"]!!.first(), "$frontendUrl/api/auth/oauth2/redirect/apple/revoke"
-        )
-            .flatMap {
-                Mono.zip(
-                    appleClient.getOAuth2UserByToken(it["id_token"] as String)
-                        .subscribeOn(Schedulers.boundedElastic()),
-                    appleClient.revokeByToken(it["access_token"] as String)
-                        .subscribeOn(Schedulers.boundedElastic())
+        ).flatMap {
+            Mono.zip(
+                appleClient.getOAuth2UserByToken(it["id_token"] as String),
+                appleClient.revokeByToken(it["access_token"] as String)
+            )
+        }.flatMap { (oAuth2User) ->
+            oAuth2User.run {
+                authenticationProducer.revokeOAuth(
+                    RevokeOAuthEvent(
+                        email = email,
+                        provider = provider
+                    )
                 )
             }
-            .flatMap { (oAuth2User) ->
-                oAuth2User.run {
-                    authenticationProducer.revokeOAuth(
-                        RevokeOAuthEvent(
-                            email = email,
-                            provider = provider
-                        )
-                    )
-                }
-            }
-            .then(Mono.defer {
-                ServerResponse.status(HttpStatus.FOUND)
-                    .location(URI.create(frontendUrl))
-                    .build()
-            })
+        }.then(
+            ServerResponse.status(HttpStatus.FOUND)
+                .location(URI.create(frontendUrl))
+                .build()
+        )
 
     fun OAuth2UserInfo.onAuthenticationSuccess(): Mono<ServerResponse> {
         var isSignUp = false

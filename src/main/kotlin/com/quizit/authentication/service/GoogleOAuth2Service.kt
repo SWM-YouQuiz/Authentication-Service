@@ -9,7 +9,6 @@ import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.server.ServerResponse
 import reactor.core.publisher.Mono
-import reactor.core.scheduler.Schedulers
 import java.net.URI
 
 @Service
@@ -24,10 +23,8 @@ class GoogleOAuth2Service(
             .map { it["access_token"] as String }
             .flatMap {
                 Mono.zip(
-                    googleClient.getOAuth2UserByToken(it)
-                        .subscribeOn(Schedulers.boundedElastic()),
+                    googleClient.getOAuth2UserByToken(it),
                     googleClient.revokeByToken(it)
-                        .subscribeOn(Schedulers.boundedElastic()),
                 )
             }
             .flatMap { (oAuth2User) ->

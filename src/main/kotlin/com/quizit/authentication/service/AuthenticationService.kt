@@ -32,8 +32,10 @@ class AuthenticationService(
                 .switchIfEmpty(Mono.error(TokenNotFoundException()))
                 .filter { token == it.content }
                 .switchIfEmpty(
-                    tokenRepository.deleteByUserId(id)
-                        .then(Mono.error(InvalidAccessException()))
+                    Mono.defer {
+                        tokenRepository.deleteByUserId(id)
+                            .then(Mono.error(InvalidAccessException()))
+                    }
                 )
                 .flatMap {
                     val accessToken = jwtProvider.createAccessToken(this)
