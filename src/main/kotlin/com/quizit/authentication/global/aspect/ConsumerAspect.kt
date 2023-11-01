@@ -1,6 +1,6 @@
 package com.quizit.authentication.global.aspect
 
-import com.quizit.authentication.global.util.logger
+import com.quizit.authentication.global.util.getLogger
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.aspectj.lang.ProceedingJoinPoint
 import org.aspectj.lang.annotation.Around
@@ -12,6 +12,8 @@ import reactor.kotlin.core.publisher.cast
 @Aspect
 @Component
 class ConsumerAspect {
+    private val logger = getLogger()
+
     @Around("@within(com.quizit.authentication.global.annotation.Consumer)")
     fun around(joinPoint: ProceedingJoinPoint) {
         (joinPoint.proceed() as Flux<*>)
