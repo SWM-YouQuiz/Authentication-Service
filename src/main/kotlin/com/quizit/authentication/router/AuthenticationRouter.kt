@@ -1,6 +1,7 @@
 package com.quizit.authentication.router
 
 import com.quizit.authentication.global.annotation.Router
+import com.quizit.authentication.global.util.logFilter
 import com.quizit.authentication.handler.AuthenticationHandler
 import org.springframework.context.annotation.Bean
 import org.springframework.web.reactive.function.server.RouterFunction
@@ -16,5 +17,6 @@ class AuthenticationRouter {
                 GET("/logout", handler::logout)
                 POST("/refresh", handler::refresh)
             }
+            filter(::logFilter)
         }
 }
