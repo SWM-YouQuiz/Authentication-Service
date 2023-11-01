@@ -110,7 +110,8 @@ tasks {
                     "**.*Producer*",
                     "**.*Consumer*",
                     "**.*Event*",
-                    "**.*OAuth*"
+                    "**.*OAuth*",
+                    "**.*Mdc*"
                 )
             }
         }
