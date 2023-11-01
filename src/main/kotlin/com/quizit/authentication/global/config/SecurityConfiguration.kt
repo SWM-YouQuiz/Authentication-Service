@@ -40,7 +40,7 @@ class SecurityConfiguration {
                 it.pathMatchers("/api/auth/admin/**")
                     .hasAuthority(Role.ADMIN.name)
                     .pathMatchers(
-                        "/actuator/health/**",
+                        "/actuator/**",
                         "/oauth2/**",
                         "/login/**",
                         "/auth/refresh"
