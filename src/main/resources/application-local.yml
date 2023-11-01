@@ -19,6 +19,5 @@ url:
     quiz: http://localhost:8083/api/quiz
 logging:
   level:
-    web: debug
     org.springframework:
       data.mongodb: debug
