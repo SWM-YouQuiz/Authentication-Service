@@ -15,6 +15,3 @@ url:
     auth: auth-service/api/auth
     user: user-service/api/user
     quiz: quiz-service/api/quiz
-logging:
-  level:
-    web: debug

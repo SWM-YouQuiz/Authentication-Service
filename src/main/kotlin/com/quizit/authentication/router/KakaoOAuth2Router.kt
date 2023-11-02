@@ -1,6 +1,7 @@
 package com.quizit.authentication.router
 
 import com.quizit.authentication.global.annotation.Router
+import com.quizit.authentication.global.util.logFilter
 import com.quizit.authentication.global.util.queryParams
 import com.quizit.authentication.handler.KakaoOAuth2Handler
 import org.springframework.context.annotation.Bean
@@ -17,5 +18,6 @@ class KakaoOAuth2Router {
                 GET("/revoke/kakao", handler::revoke)
                 GET("/redirect/kakao/revoke", queryParams("code"), handler::revokeRedirect)
             }
+            filter(::logFilter)
         }
 }

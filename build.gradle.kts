@@ -48,6 +48,7 @@ dependencies {
     implementation("io.github.microutils:kotlin-logging:3.0.5")
     implementation("io.jsonwebtoken:jjwt-api:0.11.5")
     implementation("commons-io:commons-io:2.14.0")
+    runtimeOnly("io.micrometer:micrometer-registry-prometheus")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.restdocs:spring-restdocs-webtestclient")
     testImplementation("org.springframework.security:spring-security-test")
@@ -109,7 +110,8 @@ tasks {
                     "**.*Producer*",
                     "**.*Consumer*",
                     "**.*Event*",
-                    "**.*OAuth*"
+                    "**.*OAuth*",
+                    "**.*Mdc*"
                 )
             }
         }

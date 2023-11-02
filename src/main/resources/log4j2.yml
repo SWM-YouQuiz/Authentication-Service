@@ -6,7 +6,7 @@ Configuration:
       name: Console_Appender
       target: SYSTEM_OUT
       PatternLayout:
-        pattern: "%clr{%d{yyyy-MM-dd HH:mm:ss.SSS}}{faint} %clr{%p} %clr{[%t]}{magenta} %clr{%c{1.}}{cyan}%clr{:}{faint} %m%n%xwEx"
+        pattern: "%clr{%d{yyyy-MM-dd HH:mm:ss.SSS}}{faint} %clr{%p} %clr{[%t]}{magenta} %clr{%c{1.}}{cyan}%clr{:}{faint}%notEmpty{ [%X{traceId}]} %m%n%xwEx"
   Loggers:
     Root:
       level: info
