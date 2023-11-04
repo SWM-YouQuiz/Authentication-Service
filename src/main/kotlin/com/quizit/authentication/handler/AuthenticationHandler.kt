@@ -37,7 +37,7 @@ class AuthenticationHandler(
                         ServerResponse.ok()
                             .cookie(
                                 ResponseCookie.from("refreshToken", refreshToken)
-                                    .path("$frontendUrl/")
+                                    .path("/")
                                     .httpOnly(true)
                                     .secure(true)
                                     .maxAge(Duration.ofMinutes(expire))
