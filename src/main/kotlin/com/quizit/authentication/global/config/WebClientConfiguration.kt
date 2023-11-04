@@ -1,6 +1,7 @@
 package com.quizit.authentication.global.config
 
 import com.github.jwt.authentication.DefaultJwtAuthentication
+import com.github.jwt.authentication.JwtAuthentication
 import com.quizit.authentication.global.util.getLogger
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -19,9 +20,13 @@ class WebClientConfiguration {
             .filter { request, next ->
                 ReactiveSecurityContextHolder.getContext()
                     .map { it.authentication }
+                    .filter { it is JwtAuthentication }
                     .map {
                         ClientRequest.from(request)
-                            .header(HttpHeaders.AUTHORIZATION, "Bearer ${(it as DefaultJwtAuthentication).token}")
+                            .header(
+                                HttpHeaders.AUTHORIZATION,
+                                "Bearer ${(it as DefaultJwtAuthentication).token}"
+                            )
                             .build()
                     }
                     .defaultIfEmpty(request)
